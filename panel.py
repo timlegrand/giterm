@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import curses
@@ -6,11 +5,10 @@ import curses
 class Panel(object):
 	"""Encapsulates a window
 	"""
-	def __init__(self, stdscr, height, width, y, x, border=True):
+	def __init__(self, stdscr, height, width, y, x, border='box'):
 		self.content = []
 		self.window = stdscr.derwin(height, width, y, x)
-		if border == True:
-			self.window.box()
+		self.border = border
 		self.y, self.x = y, x
 		self.H, self.W = self.window.getmaxyx()
 		self.T, self.L, self.B, self.R = 0, 0, height-1, width-1 # relative
@@ -23,9 +21,14 @@ class Panel(object):
 		self.active = False
 		self.deactivate(force=True)
 		self.load_content()
-		self.add_content()
 
 	def display(self):
+		if self.border == 'box':
+			self.window.box()
+		elif self.border == 'bounding':
+			self.window.border( ' ', ' ', ' ', ' ',
+				curses.ACS_BSSB, curses.ACS_BBSS, curses.ACS_SSBB, curses.ACS_SBBS)
+		self.add_content()
 		self.window.refresh()
 
 	def add_content(self):
@@ -46,7 +49,6 @@ class Panel(object):
 	def deactivate(self, force=False):
 		if not self.active and not force:
 			return
-		self.window.box()
 		self.active = False
 		self.window.refresh()
 
