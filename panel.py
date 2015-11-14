@@ -5,30 +5,51 @@ import curses
 class Panel(object):
 	"""Encapsulates a window
 	"""
-	def __init__(self, stdscr, height, width, y, x, border='box'):
+	def __init__(self, stdscr, height, width, y, x, border='bounding'):
 		self.content = []
 		self.window = stdscr.derwin(height, width, y, x)
 		self.border = border
-		self.y, self.x = y, x
 		self.H, self.W = self.window.getmaxyx()
 		self.T, self.L, self.B, self.R = 0, 0, height-1, width-1 # relative
-		self.ABS_T, self.ABS_L, self.ABS_B, self.ABS_R = y, x, y+height-1, x+width-1 # absolute
+		self.CNT_T, self.CNT_L, self.CNT_B, self.CNT_R = self.T+1, self.L+1, self.B-1, self.R-1
 		self.middle = (self.H//2, self.W//2)
-		self.abs_middle = ((self.H//2)+self.y-1, (self.W//2)+self.x-1)
-		self.content_start = self.y+1, self.x+1
-		self.content_end = self.y+1, self.x+1
-		self.limits = (self.x, self.x+self.W, y, y+self.H)
+		self.abs_middle = ((self.H//2)+y-1, (self.W//2)+x-1)
 		self.active = False
-		self.deactivate(force=True)
 		self.load_content()
 
+	def move_left(self):
+		y, x = self.window.getyx()
+		if x > self.CNT_L: x -= 1
+		self.window.move(y, x)
+		self.window.refresh()
+
+	def move_right(self):
+		y, x = self.window.getyx()
+		if x < self.CNT_R: x += 1
+		self.window.move(y, x)
+		self.window.refresh()
+
+	def move_up(self):
+		y, x = self.window.getyx()
+		if y > self.CNT_T: y -= 1
+		self.window.move(y, x)
+		self.window.refresh()
+
+	def move_down(self):
+		y, x = self.window.getyx()
+		if y < self.CNT_B: y += 1
+		self.window.move(y, x)
+		self.window.refresh()
+
 	def display(self):
-		if self.border == 'box':
-			self.window.box()
-		elif self.border == 'bounding':
-			self.window.border( ' ', ' ', ' ', ' ',
-				curses.ACS_BSSB, curses.ACS_BBSS, curses.ACS_SSBB, curses.ACS_SBBS)
+		if not self.active:
+			if self.border == 'box':
+				self.window.box()
+			elif self.border == 'bounding':
+				self.window.border( ' ', ' ', ' ', ' ',
+					curses.ACS_BSSB, curses.ACS_BBSS, curses.ACS_SSBB, curses.ACS_SBBS)
 		self.add_content()
+		self.window.move(self.CNT_T, self.CNT_L)
 		self.window.refresh()
 
 	def add_content(self):
@@ -43,12 +64,16 @@ class Panel(object):
 		if self.active:
 			return
 		self.active = True
+		self.window.box()
+		self.window.move(self.CNT_T, self.CNT_L)
 		self.window.refresh()
 		return self
 
 	def deactivate(self, force=False):
 		if not self.active and not force:
 			return
+		self.window.border( ' ', ' ', ' ', ' ',
+			curses.ACS_BSSB, curses.ACS_BBSS, curses.ACS_SSBB, curses.ACS_SBBS)
 		self.active = False
 		self.window.refresh()
 

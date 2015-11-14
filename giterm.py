@@ -32,17 +32,12 @@ def keyloop(panels):
  	w_20_percent = mainw_x * 2 // 10
  	w_80_percent = mainw_x - w_20_percent
 	panels.append(Panel(mainw, mainw_y-4, w_80_percent, 0, w_20_percent))
-	panels.append(Panel(mainw, 4, mainw_x, mainw_y-4, 0, border='bounding'))
+	panels.append(Panel(mainw, 4, mainw_x, mainw_y-4, 0))
 	active = panels.append(Panel(mainw, mainw_y-4, w_20_percent, 0, 0)).activate()
 	panels.display()
-
-	cursor_y, cursor_x = active.content_start
-	left, right, top, bottom = active.limits
-	import time
-
+	mainw.move(active.CNT_T, active.CNT_L)
 	while True:
 		# active.debug()
-		mainw.move(cursor_y, cursor_x)
 		c = mainw.getch()
 		if 0<c<256:
 			c = chr(c)
@@ -52,11 +47,10 @@ def keyloop(panels):
 				break
 			elif c == '\t':
 				active = panels.toggle()
-				cursor_y, cursor_x = active.content_start
-		elif c == curses.KEY_UP    and cursor_y > active.ABS_T: cursor_y -= 1
-		elif c == curses.KEY_LEFT  and cursor_x > active.ABS_L: cursor_x -= 1
-		elif c == curses.KEY_DOWN  and cursor_y < active.ABS_B: cursor_y += 1
-		elif c == curses.KEY_RIGHT and cursor_x < active.ABS_R: cursor_x += 1
+		elif c == curses.KEY_UP    : active.move_up()
+		elif c == curses.KEY_LEFT  : active.move_left()
+		elif c == curses.KEY_DOWN  : active.move_down()
+		elif c == curses.KEY_RIGHT : active.move_right()
 		elif c == curses.KEY_RESIZE:
 			mainw.clear()
 			pass
