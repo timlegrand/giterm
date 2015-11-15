@@ -81,27 +81,31 @@ class Panel(object):
 			pass
 
 	def move_left(self):
-		y, x = self.window.getyx()
-		if x > self.CNT_L: x -= 1
-		self.window.move(y, x)
-		self.window.refresh()
+		self.cursor_y, self.cursor_x = self.window.getyx()
+		if self.cursor_x > self.CNT_L:
+			self.cursor_x -= 1
+			self._move_cursor()
 
 	def move_right(self):
-		y, x = self.window.getyx()
-		if x < self.CNT_R: x += 1
-		self.window.move(y, x)
-		self.window.refresh()
+		self.cursor_y, self.cursor_x = self.window.getyx()
+		if self.cursor_x < self.CNT_R:
+			self.cursor_x += 1
+			self._move_cursor()
 
 	def move_up(self):
-		y, x = self.window.getyx()
-		if y > self.CNT_T: y -= 1
-		self.window.move(y, x)
-		self.window.refresh()
+		self.cursor_y, self.cursor_x = self.window.getyx()
+		if self.cursor_y > self.CNT_T:
+			self.cursor_y -= 1
+			self._move_cursor()
 
 	def move_down(self):
-		y, x = self.window.getyx()
-		if y < self.CNT_B: y += 1
-		self.window.move(y, x)
+		self.cursor_y, self.cursor_x = self.window.getyx()
+		if self.cursor_y < self.CNT_B:
+			self.cursor_y += 1
+			self._move_cursor()
+
+	def _move_cursor(self):
+		self.window.move(self.cursor_y, self.cursor_x)
 		self.window.refresh()
 
 	def debug(self, refresh=True):
