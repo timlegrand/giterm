@@ -15,7 +15,66 @@ class Panel(object):
 		self.middle = (self.H//2, self.W//2)
 		self.abs_middle = ((self.H//2)+y-1, (self.W//2)+x-1)
 		self.active = False
+		self.changed = False
 		self.load_content()
+
+	def display(self):
+		self.window.clear()
+		if self.active:
+			self.window.box()
+		else:
+			self.window.border( ' ', ' ', ' ', ' ',
+				curses.ACS_BSSB, curses.ACS_BBSS, curses.ACS_SSBB, curses.ACS_SBBS)
+		self.add_content()
+		self.window.move(self.CNT_T, self.CNT_L)
+		self.window.refresh()
+
+	def add_content(self):
+		for i in range(len(self.content)):
+			self.window.addnstr(i+1, 1, str(self.content[i]), self.W-3)
+
+	def load_content(self):
+		for i in range(self.H-2):
+			self.content.append("Content starts here...")
+		self.changed = True
+
+	# Callback function for remote observers
+	def set_content(self, event):
+		self.content[0] = event.content
+		self.changed = True
+		self.display()
+
+	def activate(self):
+		if self.active:
+			return
+		self.active = True
+		self.display()
+		return self
+
+	def deactivate(self, force=False):
+		if not self.active and not force:
+			return
+		self.active = False
+		self.display()
+
+	def text_center(self, row, col, string):
+		self.window.addstr(row, col-len(string)/2, string)
+
+	def text(self, y, x, string):
+		self.window.addstr(y, x, string)
+
+	def text_right_align(self, y, x, string):
+		self.window.addstr(y, x-len(string), string)
+
+	def text_force_right_align(self, y, x, string):
+		'''Forces right-aligned text to be printed
+		until the last char position of the panel
+		even with scrolling disabled''' 
+		try:
+			self.window.addstr(y, x-len(string), string)
+		except curses.error:
+			pass
+			#window.addstr(0, 0, 'CAUGHT')
 
 	def move_left(self):
 		y, x = self.window.getyx()
@@ -40,61 +99,6 @@ class Panel(object):
 		if y < self.CNT_B: y += 1
 		self.window.move(y, x)
 		self.window.refresh()
-
-	def display(self):
-		if not self.active:
-			if self.border == 'box':
-				self.window.box()
-			elif self.border == 'bounding':
-				self.window.border( ' ', ' ', ' ', ' ',
-					curses.ACS_BSSB, curses.ACS_BBSS, curses.ACS_SSBB, curses.ACS_SBBS)
-		self.add_content()
-		self.window.move(self.CNT_T, self.CNT_L)
-		self.window.refresh()
-
-	def add_content(self):
-		for i in xrange(len(self.content)-1):
-			self.window.addnstr(i+1, 1, self.content[i], self.W-2)
-
-	def load_content(self):
-		for i in range(self.H-2):
-			self.content.append("Content starts here...")
-
-	def activate(self):
-		if self.active:
-			return
-		self.active = True
-		self.window.box()
-		self.window.move(self.CNT_T, self.CNT_L)
-		self.window.refresh()
-		return self
-
-	def deactivate(self, force=False):
-		if not self.active and not force:
-			return
-		self.window.border( ' ', ' ', ' ', ' ',
-			curses.ACS_BSSB, curses.ACS_BBSS, curses.ACS_SSBB, curses.ACS_SBBS)
-		self.active = False
-		self.window.refresh()
-
-	def text_center(self, row, col, string):
-		self.window.addstr(row, col-len(string)/2, string)
-
-	def text(self, y, x, string):
-		self.window.addstr(y, x, string)
-
-	def text_right_align(self, y, x, string):
-		self.window.addstr(y, x-len(string), string)
-
-	def text_force_right_align(self, y, x, string):
-		'''Forces right-aligned text to be printed
-		until the last char position of the panel
-		even with scrolling disabled''' 
-		try:
-			self.window.addstr(y, x-len(string), string)
-		except curses.error:
-			pass
-			#window.addstr(0, 0, 'CAUGHT')
 
 	def debug(self, refresh=True):
 		self.window.box(curses.ACS_CKBOARD,curses.ACS_CKBOARD)

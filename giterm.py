@@ -4,7 +4,9 @@
 import curses
 from itertools import cycle
 from panel import Panel
+import observer
 #from cursutils import debug
+import watch
 
 class PanelManager(list):
 	def __init__(self, stdscr):
@@ -29,13 +31,20 @@ class PanelManager(list):
 def keyloop(panels):
 	mainw = panels.stdscr
 	mainw_y, mainw_x = mainw.getmaxyx()
- 	w_20_percent = mainw_x * 2 // 10
- 	w_80_percent = mainw_x - w_20_percent
+	w_20_percent = mainw_x * 2 // 10
+	w_80_percent = mainw_x - w_20_percent
 	panels.append(Panel(mainw, mainw_y-4, w_80_percent, 0, w_20_percent))
 	panels.append(Panel(mainw, 4, mainw_x, mainw_y-4, 0))
 	active = panels.append(Panel(mainw, mainw_y-4, w_20_percent, 0, 0)).activate()
 	panels.display()
 	mainw.move(active.CNT_T, active.CNT_L)
+
+
+	w = watch.Watcher()
+	w.subscribe(cb=panels[0].set_content)
+	w.start()
+
+
 	while True:
 		# active.debug()
 		c = mainw.getch()
@@ -57,6 +66,9 @@ def keyloop(panels):
 			#TODO: handle terminal resize properly (downsize and upsize)
 		else:
 			pass
+
+	w.stop()
+
 
 def main(stdscr):
 	panels = PanelManager(stdscr)
