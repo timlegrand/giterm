@@ -2,30 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import curses
-from itertools import cycle
-from panel import Panel
+from panel import Panel, PanelManager
 import watch
-import collections
-
-class PanelManager(collections.OrderedDict):
-	def __init__(self, stdscr):
-		super(PanelManager, self).__init__()
-		self.stdscr = stdscr
-
-	def toggle(self):
-		it = cycle(self.iteritems())
-		for k, panel in it:
-			if panel.active:
-				panel.deactivate()
-				return next(it)[1].activate()
-
-	def display(self):
-		active = None
-		for k, panel in self.iteritems():
-			panel.display()
-			if panel.active:
-				active = panel
-		self.stdscr.move(*active.getcontentyx())
 
 def keyloop(panels):
 	mainw = panels.stdscr

@@ -1,6 +1,28 @@
 # -*- coding: utf-8 -*-
 
 import curses
+from itertools import cycle
+from collections import OrderedDict
+
+class PanelManager(OrderedDict):
+	def __init__(self, stdscr):
+		super(PanelManager, self).__init__()
+		self.stdscr = stdscr
+
+	def toggle(self):
+		it = cycle(self.iteritems())
+		for k, panel in it:
+			if panel.active:
+				panel.deactivate()
+				return next(it)[1].activate()
+
+	def display(self):
+		active = None
+		for k, panel in self.iteritems():
+			panel.display()
+			if panel.active:
+				active = panel
+		self.stdscr.move(*active.getcontentyx())
 
 class Panel(object):
 	"""Encapsulates a window
