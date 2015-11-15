@@ -8,42 +8,45 @@ import observer
 #from cursutils import debug
 import watch
 
-class PanelManager(list):
+class PanelManager(dict):
 	def __init__(self, stdscr):
 		super(PanelManager, self).__init__()
 		self.stdscr = stdscr
 
-	def append(self, panel):
-		super(PanelManager, self).append(panel)
+	def append(self, name, panel):
+		# super(PanelManager, self).append(panel)
+		self[name] = panel
 		return panel
 
 	def toggle(self):
-		it = cycle(self)
-		for panel in it:
+		it = cycle(self.iteritems())
+		for k, panel in it:
 			if panel.active:
 				panel.deactivate()
-				return next(it).activate()
+				return next(it)[1].activate()
 
 	def display(self):
-		for panel in self:
+		active = None
+		for k, panel in self.iteritems():
 			panel.display()
+			if panel.active:
+				active = panel
+		self.stdscr.move(*active.getcontentyx())
 
 def keyloop(panels):
 	mainw = panels.stdscr
-	mainw_y, mainw_x = mainw.getmaxyx()
-	w_20_percent = mainw_x * 2 // 10
-	w_80_percent = mainw_x - w_20_percent
-	panels.append(Panel(mainw, mainw_y-4, w_80_percent, 0, w_20_percent))
-	panels.append(Panel(mainw, 4, mainw_x, mainw_y-4, 0))
-	active = panels.append(Panel(mainw, mainw_y-4, w_20_percent, 0, 0)).activate()
+	width, height = mainw.getmaxyx()
+	w_20_percent = height * 2 // 10
+	w_80_percent = height - w_20_percent
+	panels['hier']    = Panel(mainw, width-4, w_20_percent, 0, 0)
+	panels['loghist'] = Panel(mainw, width-4, w_80_percent, 0, w_20_percent)
+	panels['status']  = Panel(mainw, 4, height, width-4, 0)
+	active = panels['loghist'].activate()
 	panels.display()
-	mainw.move(active.CNT_T, active.CNT_L)
-
 
 	w = watch.Watcher()
-	w.subscribe(cb=panels[0].set_content)
+	w.subscribe(cb=panels['status'].set_content)
 	w.start()
-
 
 	while True:
 		# active.debug()
@@ -68,7 +71,6 @@ def keyloop(panels):
 			pass
 
 	w.stop()
-
 
 def main(stdscr):
 	panels = PanelManager(stdscr)

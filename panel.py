@@ -43,6 +43,7 @@ class Panel(object):
 		self.content[0] = event.content
 		self.changed = True
 		self.display()
+		self.window.move(self.CNT_T, self.CNT_L)
 
 	def activate(self):
 		if self.active:
@@ -56,6 +57,10 @@ class Panel(object):
 			return
 		self.active = False
 		self.display()
+
+	def getcontentyx(self):
+		y, x = self.window.getbegyx()
+		return y+self.CNT_T, x+self.CNT_L
 
 	def text_center(self, row, col, string):
 		self.window.addstr(row, col-len(string)/2, string)
