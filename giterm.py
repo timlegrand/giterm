@@ -4,19 +4,13 @@
 import curses
 from itertools import cycle
 from panel import Panel
-import observer
-#from cursutils import debug
 import watch
+import collections
 
-class PanelManager(dict):
+class PanelManager(collections.OrderedDict):
 	def __init__(self, stdscr):
 		super(PanelManager, self).__init__()
 		self.stdscr = stdscr
-
-	def append(self, name, panel):
-		# super(PanelManager, self).append(panel)
-		self[name] = panel
-		return panel
 
 	def toggle(self):
 		it = cycle(self.iteritems())
