@@ -69,17 +69,16 @@ class Panel(object):
 		self.window.addstr(y, x, string)
 
 	def text_right_align(self, y, x, string):
-		self.window.addstr(y, x-len(string), string)
+		self.window.addstr(y, x-len(string)+1, string)
 
 	def text_force_right_align(self, y, x, string):
 		'''Forces right-aligned text to be printed
 		until the last char position of the panel
 		even with scrolling disabled''' 
 		try:
-			self.window.addstr(y, x-len(string), string)
+			self.window.addstr(y, x-len(string)+1, string)
 		except curses.error:
 			pass
-			#window.addstr(0, 0, 'CAUGHT')
 
 	def move_left(self):
 		y, x = self.window.getyx()
@@ -115,9 +114,10 @@ class Panel(object):
 		TL = str((self.T, self.L))
 		self.window.addstr(self.T, self.L, TL)
 		TR = str((self.T, self.R))
-		self.text_right_align(self.T, self.R+1, TR)
+		self.text_force_right_align(self.T, self.R, TR)
 		BL = str((self.B, self.L))
 		self.window.addstr(self.B, self.L, BL)
 		BR = str((self.B, self.R))
+		self.text_force_right_align(self.B, self.R, BR)
 		if refresh:
 			self.window.refresh()
