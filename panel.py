@@ -53,7 +53,14 @@ class Panel(object):
 
 	def add_content(self):
 		for i in range(len(self.content)):
-			self.window.addnstr(i+1, 1, str(self.content[i]), self.W-3)
+			short = self.shorten(str(self.content[i]), self.W-3)
+			self.window.addnstr(i+self.CNT_T, self.CNT_L, short, self.W-3)
+			# TODO: need to handle case of last line fulfilled with scrolling disabled
+
+	def shorten(self, string, size):
+		if len(string) > size:
+			return string[:size-3] + '...'
+		return string
 
 	def load_content(self):
 		for i in range(self.H-2):

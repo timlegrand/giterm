@@ -7,12 +7,12 @@ import watch
 
 def keyloop(panels):
 	mainw = panels.stdscr
-	width, height = mainw.getmaxyx()
-	w_20_percent = height * 2 // 10
-	w_80_percent = height - w_20_percent
-	panels['hier']    = Panel(mainw, width-4, w_20_percent, 0, 0)
-	panels['loghist'] = Panel(mainw, width-4, w_80_percent, 0, w_20_percent)
-	panels['status']  = Panel(mainw, 4, height, width-4, 0)
+	height, width = mainw.getmaxyx()
+	w_25_percent = width // 4
+	w_75_percent = width - w_25_percent
+	panels['hier']    = Panel(mainw, height-4, w_25_percent, 0, 0)
+	panels['loghist'] = Panel(mainw, height-4, w_75_percent, 0, w_25_percent)
+	panels['status']  = Panel(mainw, 4, width, height-4, 0)
 	active = panels['loghist'].activate()
 	panels.display()
 
