@@ -22,7 +22,8 @@ class PanelManager(OrderedDict):
 			panel.display()
 			if panel.active:
 				active = panel
-		self.stdscr.move(*active.getcontentyx())
+		if active:
+			self.stdscr.move(*active.getcontentyx())
 
 class Panel(object):
 	"""Encapsulates a window
@@ -37,7 +38,7 @@ class Panel(object):
 		self.middle = (self.H//2, self.W//2)
 		self.abs_middle = ((self.H//2)+y-1, (self.W//2)+x-1)
 		self.active = False
-		self.changed = False
+		self.selected = -1
 		self.load_content()
 
 	def display(self):
@@ -47,15 +48,15 @@ class Panel(object):
 		else:
 			self.window.border( ' ', ' ', ' ', ' ',
 				curses.ACS_BSSB, curses.ACS_BBSS, curses.ACS_SSBB, curses.ACS_SBBS)
-		self.add_content()
-		self.window.move(self.CNT_T, self.CNT_L)
-		self.window.refresh()
-
-	def add_content(self):
-		for i in range(len(self.content)):
+		for i in range(min(len(self.content), self.H-2)):
+			y = i+self.CNT_T
 			short = self.shorten(str(self.content[i]), self.W-3)
-			self.window.addnstr(i+self.CNT_T, self.CNT_L, short, self.W-3)
+			self.window.addnstr(y, self.CNT_L, short, self.W-3)
+			if y == self.selected:
+				self.window.chgat(y, self.CNT_L, self.CNT_R, curses.A_REVERSE)
 			# TODO: need to handle case of last line fulfilled with scrolling disabled
+		self.window.move(self.selected if self.selected != -1 else self.CNT_T, self.CNT_L)
+		self.window.refresh()
 
 	def shorten(self, string, size):
 		if len(string) > size:
@@ -64,15 +65,17 @@ class Panel(object):
 
 	def load_content(self):
 		for i in range(self.H-2):
-			self.content.append("Content starts here...")
-		self.changed = True
+			self.content.append("Content line #%s starts here and end here." % str(i))
 
 	# Callback function for remote observers
-	def set_content(self, event):
-		self.content[0] = event.content
-		self.changed = True
+	def handle_event(self, event):
+		self.content.insert(0, event.content)
 		self.display()
-		self.window.move(self.CNT_T, self.CNT_L)
+
+	def select(self):
+		y, x = self.window.getyx()
+		self.selected = -1 if y == self.selected else y
+		self.display()
 
 	def activate(self):
 		if self.active:
