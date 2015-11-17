@@ -8,6 +8,37 @@ class PanelManager(OrderedDict):
 	def __init__(self, stdscr):
 		super(PanelManager, self).__init__()
 		self.stdscr = stdscr
+		self.create_panels()
+
+	def create_panels(self):
+		"""Creates a SourceTree-like interface:
+┌────────┐┌────────────────────────────────┐
+│Branches││Log history                     │
+│> master││                                │
+│> devel ││                                │
+│        ││                                │
+│Remotes ││                                │
+│> origin│└────────────────────────────────┘
+│        │┌───────────────┐┌───────────────┐
+│Tags    ││ Staged files  ││               │
+│        │└───────────────┘│ Diff of       │
+│Stashes │┌───────────────┐│ selected file │
+│        ││ Changed files ││               │
+└────────┘└───────────────┘└───────────────┘
+		"""
+		height, width = self.stdscr.getmaxyx()
+		w_15_pct = width // 7
+		w_30_pct = width // 3
+		w_55_pct = width - w_30_pct - w_15_pct
+		h_49_pct = height // 2
+		h_51_pct = height - h_49_pct
+		h_25_pct = h_51_pct // 2
+		h_26_pct = h_51_pct - h_25_pct
+		self['hier']    = Panel(self.stdscr, height, w_15_pct, 0, 0)
+		self['loghist'] = Panel(self.stdscr, h_49_pct, w_30_pct+w_55_pct, 0, w_15_pct)
+		self['stage']   = Panel(self.stdscr, h_25_pct, w_30_pct, h_49_pct, w_15_pct)
+		self['changes'] = Panel(self.stdscr, h_26_pct, w_30_pct, h_49_pct+h_25_pct, w_15_pct)
+		self['diff']    = Panel(self.stdscr, h_51_pct, w_55_pct, h_49_pct, w_15_pct+w_30_pct)
 
 	def toggle(self):
 		it = cycle(self.iteritems())
@@ -65,11 +96,12 @@ class Panel(object):
 
 	def load_content(self):
 		for i in range(self.H-2):
-			self.content.append("Content line #%s starts here and end here." % str(i))
+			self.content.append("Content line #%s starts here and ends here." % str(i))
 
 	# Callback function for remote observers
 	def handle_event(self, event):
 		self.content.insert(0, event.content)
+		if self.selected != -1: self.selected += 1
 		self.display()
 
 	def select(self):
