@@ -12,7 +12,7 @@ import observer as cb
 class FileChangedHandler(FileSystemEventHandler, cb.Observable):
 
 	def on_any_event(self, event):
-		if event.src_path == ".":
+		if event.src_path == "." or ".git" in event.src_path:
 			return
 		p = event.src_path
 		if event.src_path[:2] == "./":
