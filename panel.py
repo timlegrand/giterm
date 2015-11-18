@@ -4,6 +4,13 @@ import curses
 from itertools import cycle
 from collections import OrderedDict
 
+# Callback function for remote observers
+def git_status():
+	import subprocess
+	cmd = 'git status -s'
+	process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
+	return process.communicate()[0] 
+
 class PanelManager(OrderedDict):
 	def __init__(self, stdscr):
 		super(PanelManager, self).__init__()
@@ -12,22 +19,25 @@ class PanelManager(OrderedDict):
 
 	def create_panels(self):
 		"""Creates a SourceTree-like interface:
-┌────────┐┌────────────────────────────────┐
-│Branches││Log history                     │
-│> master││                                │
-│> devel ││                                │
-│        ││                                │
-│Remotes ││                                │
-│> origin│└────────────────────────────────┘
-│        │┌───────────────┐┌───────────────┐
-│Tags    ││ Staged files  ││               │
-│        │└───────────────┘│ Diff of       │
-│Stashes │┌───────────────┐│ selected file │
-│        ││ Changed files ││               │
-└────────┘└───────────────┘└───────────────┘
+	┌────────┐┌────────────────────────────────┐
+	│Branches││Log history                     │
+	│> master││                                │
+	│> devel ││                                │
+	│        ││                                │
+	│Remotes ││                                │
+	│> origin│└────────────────────────────────┘
+	│        │┌───────────────┐┌───────────────┐
+	│Tags    ││ Staged files  ││               │
+	│        │└───────────────┘│ Diff of       │
+	│Stashes │┌───────────────┐│ selected file │
+	│        ││ Changed files ││               │
+	└────────┘└───────────────┘└───────────────┘
 		"""
 		height, width = self.stdscr.getmaxyx()
-		w_15_pct = width // 7
+		if height < 8 or width < 40:
+			raise Exception("Height and width must be at least 8x80. Currently: %sx%s" % (height, width))
+		#TODO: add minimum widths and heights as requirements
+		w_15_pct = width // 7 if width // 7 > 15 else 15
 		w_30_pct = width // 3
 		w_55_pct = width - w_30_pct - w_15_pct
 		h_49_pct = height // 2
@@ -40,7 +50,10 @@ class PanelManager(OrderedDict):
 		self['changes'] = Panel(self.stdscr, h_26_pct, w_30_pct, h_49_pct+h_25_pct, w_15_pct)
 		self['diff']    = Panel(self.stdscr, h_51_pct, w_55_pct, h_49_pct, w_15_pct+w_30_pct)
 
+		self['changes'].get_changes = git_status
+
 	def toggle(self):
+		# TODO: add a reverse cycling
 		it = cycle(self.iteritems())
 		for k, panel in it:
 			if panel.active:
@@ -65,29 +78,43 @@ class Panel(object):
 		self.border = border
 		self.H, self.W = self.window.getmaxyx()
 		self.T, self.L, self.B, self.R = 0, 0, height-1, width-1 # relative
-		self.CNT_T, self.CNT_L, self.CNT_B, self.CNT_R = self.T+1, self.L+1, self.B-1, self.R-1
+		self.CNT_T, self.CNT_L, self.CNT_B, self.CNT_R, self.CNT_H, self.CNT_W = self.T+1, self.L+1, self.B-1, self.R-1, height-2, width-2
+		self.cursor_y, self.cursor_x = self.CNT_T, self.CNT_L
 		self.middle = (self.H//2, self.W//2)
-		self.abs_middle = ((self.H//2)+y-1, (self.W//2)+x-1)
 		self.active = False
+		self.topLineNum = 0
 		self.selected = -1
+		self.processing_event = False
 		self.load_content()
 
 	def display(self):
 		self.window.clear()
+		self.draw_borders()
+		self.draw_content()
+		self._move_cursor()
+		self.window.refresh()
+
+	def draw_content(self):
+		top = self.topLineNum
+		bottom = self.topLineNum + self.CNT_H
+		for i, line in enumerate(self.content[top:bottom]):
+			y = i+self.CNT_T
+			short = self.shorten(line, self.W-3)
+			self.window.addnstr(y, self.CNT_L, short, self.W-3)
+			if self.selected != -1 and y == self.selected - self.topLineNum:
+				self.window.chgat(y, self.CNT_L, self.CNT_R, curses.A_REVERSE)
+			# TODO: need to handle case of last line fulfilled with scrolling disabled
+
+	def draw_borders(self):
 		if self.active:
 			self.window.box()
 		else:
 			self.window.border( ' ', ' ', ' ', ' ',
 				curses.ACS_BSSB, curses.ACS_BBSS, curses.ACS_SSBB, curses.ACS_SBBS)
-		for i in range(min(len(self.content), self.H-2)):
-			y = i+self.CNT_T
-			short = self.shorten(str(self.content[i]), self.W-3)
-			self.window.addnstr(y, self.CNT_L, short, self.W-3)
-			if y == self.selected:
-				self.window.chgat(y, self.CNT_L, self.CNT_R, curses.A_REVERSE)
-			# TODO: need to handle case of last line fulfilled with scrolling disabled
-		self.window.move(self.selected if self.selected != -1 else self.CNT_T, self.CNT_L)
-		self.window.refresh()
+		sb = int(self.topLineNum * self.CNT_H / (max(len(self.content) - self.CNT_H, 1)))
+		if sb < self.CNT_T: sb = sb + self.CNT_T
+		if sb > self.CNT_B: sb = self.CNT_B
+		self.window.addnstr(sb, self.R, '<', 1)
 
 	def shorten(self, string, size):
 		if len(string) > size:
@@ -95,18 +122,29 @@ class Panel(object):
 		return string
 
 	def load_content(self):
-		for i in range(self.H-2):
-			self.content.append("Content line #%s starts here and ends here." % str(i))
+		for i in range(1):
+			self.content.append("Line #%s starts here and ends here." % str(i))
 
 	# Callback function for remote observers
 	def handle_event(self, event):
+		if self.processing_event:
+			return
+		self.processing_event = True
+		output = self.get_changes()
+		for l in output.splitlines():
+			self.content.insert(0, l)
+			if self.selected != -1: self.selected += 1
+		self.display()
+		self.processing_event = False 
+		return
+
 		self.content.insert(0, event.content)
 		if self.selected != -1: self.selected += 1
 		self.display()
 
 	def select(self):
-		y, x = self.window.getyx()
-		self.selected = -1 if y == self.selected else y
+		# y, x = self.window.getyx()
+		self.selected = -1 if self.cursor_y == self.selected else self.cursor_y
 		self.display()
 
 	def activate(self):
@@ -145,28 +183,29 @@ class Panel(object):
 			pass
 
 	def move_left(self):
-		self.cursor_y, self.cursor_x = self.window.getyx()
 		if self.cursor_x > self.CNT_L:
 			self.cursor_x -= 1
 			self._move_cursor()
 
 	def move_right(self):
-		self.cursor_y, self.cursor_x = self.window.getyx()
 		if self.cursor_x < self.CNT_R:
 			self.cursor_x += 1
 			self._move_cursor()
 
 	def move_up(self):
-		self.cursor_y, self.cursor_x = self.window.getyx()
 		if self.cursor_y > self.CNT_T:
 			self.cursor_y -= 1
 			self._move_cursor()
-
+		elif self.topLineNum >= 1:
+			self.topLineNum -= 1
+			self.display()
 	def move_down(self):
-		self.cursor_y, self.cursor_x = self.window.getyx()
 		if self.cursor_y < self.CNT_B:
 			self.cursor_y += 1
 			self._move_cursor()
+		elif self.topLineNum + self.CNT_H < len(self.content):
+			self.topLineNum += 1
+			self.display()
 
 	def _move_cursor(self):
 		self.window.move(self.cursor_y, self.cursor_x)
