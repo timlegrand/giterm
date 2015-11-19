@@ -52,9 +52,9 @@ class PanelManager(OrderedDict):
 
 		self['changes'].get_changes = git_status
 
-	def toggle(self):
+	def toggle(self, reverse=False):
 		# TODO: add a reverse cycling
-		it = cycle(self.iteritems())
+		it = cycle(sorted(self.iteritems(), reverse=reverse))
 		for k, panel in it:
 			if panel.active:
 				panel.deactivate()
@@ -136,7 +136,7 @@ class Panel(object):
 			self.content.insert(0, l)
 			if self.selected != -1: self.selected += 1
 		self.display()
-		self.processing_event = False 
+		self.processing_event = False
 		return
 
 		self.content.insert(0, event.content)
@@ -144,7 +144,6 @@ class Panel(object):
 		self.display()
 
 	def select(self):
-		# y, x = self.window.getyx()
 		self.selected = -1 if self.cursor_y == self.selected else self.cursor_y
 		self.display()
 
@@ -201,7 +200,7 @@ class Panel(object):
 			self.topLineNum -= 1
 			self.display()
 	def move_down(self):
-		if self.cursor_y < self.CNT_B:
+		if self.cursor_y < self.CNT_B and self.cursor_y < len(self.content):
 			self.cursor_y += 1
 			self._move_cursor()
 		elif self.topLineNum + self.CNT_H < len(self.content):

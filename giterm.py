@@ -25,6 +25,7 @@ def keyloop(stdscr):
 				break
 			elif c == '\t':
 				active = panels.toggle()
+		elif c == curses.KEY_BTAB  : active = panels.toggle(reverse=True)
 		elif c == curses.KEY_UP    : active.move_up()
 		elif c == curses.KEY_LEFT  : active.move_left()
 		elif c == curses.KEY_DOWN  : active.move_down()
