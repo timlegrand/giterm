@@ -3,13 +3,7 @@
 import curses
 from itertools import cycle
 from collections import OrderedDict
-
-# Callback function for remote observers
-def git_status():
-	import subprocess
-	cmd = 'git status -s'
-	process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
-	return process.communicate()[0]
+import rungit
 
 class PanelManager(OrderedDict):
 	def __init__(self, stdscr):
@@ -50,7 +44,11 @@ class PanelManager(OrderedDict):
 		self['changes'] = Panel(self.stdscr, h_26_pct, w_30_pct, h_49_pct+h_25_pct, w_15_pct)
 		self['diff']    = Panel(self.stdscr, h_51_pct, w_55_pct, h_49_pct, w_15_pct+w_30_pct)
 
-		self['changes'].get_changes = git_status
+		self['changes'].rungit = rungit.git_changed
+		self['stage'].rungit = rungit.git_staged
+		self['loghist'].rungit = rungit.git_history
+		self['hier'].rungit = rungit.git_branch
+		self['diff'].rungit = rungit.git_diff
 
 	def toggle(self, reverse=False):
 		# TODO: add a reverse cycling
@@ -84,7 +82,6 @@ class Panel(object):
 		self.active = False
 		self.topLineNum = 0
 		self.selected = -1
-		self.processing_event = False
 		self.load_content()
 
 	def display(self):
@@ -128,19 +125,7 @@ class Panel(object):
 
 	# Callback function for remote observers
 	def handle_event(self, event):
-		if self.processing_event:
-			return
-		self.processing_event = True
-		output = self.get_changes()
-		for l in output.splitlines():
-			self.content.insert(0, l)
-			if self.selected != -1: self.selected += 1
-		self.display()
-		self.processing_event = False
-		return
-
-		self.content.insert(0, event.content)
-		if self.selected != -1: self.selected += 1
+		self.content = self.rungit()
 		self.display()
 
 	def select(self):

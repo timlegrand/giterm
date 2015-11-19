@@ -12,6 +12,10 @@ def keyloop(stdscr):
 
 	w = watch.Watcher()
 	w.event_handler.subscribe(panels['changes'].handle_event)
+	w.event_handler.subscribe(panels['stage'].handle_event)
+	w.event_handler.subscribe(panels['loghist'].handle_event)
+	w.event_handler.subscribe(panels['hier'].handle_event)
+	# w.event_handler.subscribe(panels['diff'].handle_event)
 	w.start()
 
 	while True:
