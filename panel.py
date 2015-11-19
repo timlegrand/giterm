@@ -9,7 +9,7 @@ def git_status():
 	import subprocess
 	cmd = 'git status -s'
 	process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
-	return process.communicate()[0] 
+	return process.communicate()[0]
 
 class PanelManager(OrderedDict):
 	def __init__(self, stdscr):
@@ -112,9 +112,10 @@ class Panel(object):
 			self.window.border( ' ', ' ', ' ', ' ',
 				curses.ACS_BSSB, curses.ACS_BBSS, curses.ACS_SSBB, curses.ACS_SBBS)
 		sb = int(self.topLineNum * self.CNT_H / (max(len(self.content) - self.CNT_H, 1)))
-		if sb < self.CNT_T: sb = sb + self.CNT_T
-		if sb > self.CNT_B: sb = self.CNT_B
-		self.window.addnstr(sb, self.R, '<', 1)
+		if len(self.content) > self.CNT_H:
+			if sb < self.CNT_T: sb = sb + self.CNT_T
+			if sb > self.CNT_B: sb = self.CNT_B
+			self.window.addnstr(sb, self.R, 'o', 1)
 
 	def shorten(self, string, size):
 		if len(string) > size:
@@ -122,7 +123,7 @@ class Panel(object):
 		return string
 
 	def load_content(self):
-		for i in range(1):
+		for i in range(5):
 			self.content.append("Line #%s starts here and ends here." % str(i))
 
 	# Callback function for remote observers
