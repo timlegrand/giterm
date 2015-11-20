@@ -30,7 +30,6 @@ class PanelManager(OrderedDict):
 		height, width = self.stdscr.getmaxyx()
 		if height < 8 or width < 40:
 			raise Exception("Height and width must be at least 8x80. Currently: %sx%s" % (height, width))
-		#TODO: add minimum widths and heights as requirements
 		w_15_pct = width // 7 if width // 7 > 15 else 15
 		w_30_pct = width // 3
 		w_55_pct = width - w_30_pct - w_15_pct
@@ -38,11 +37,11 @@ class PanelManager(OrderedDict):
 		h_51_pct = height - h_49_pct
 		h_25_pct = h_51_pct // 2
 		h_26_pct = h_51_pct - h_25_pct
-		self['hier']    = Panel(self.stdscr, height, w_15_pct, 0, 0)
-		self['loghist'] = Panel(self.stdscr, h_49_pct, w_30_pct+w_55_pct, 0, w_15_pct)
-		self['stage']   = Panel(self.stdscr, h_25_pct, w_30_pct, h_49_pct, w_15_pct)
-		self['changes'] = Panel(self.stdscr, h_26_pct, w_30_pct, h_49_pct+h_25_pct, w_15_pct)
-		self['diff']    = Panel(self.stdscr, h_51_pct, w_55_pct, h_49_pct, w_15_pct+w_30_pct)
+		self['hier']    = Panel(self.stdscr, height, w_15_pct, 0, 0, title='')
+		self['loghist'] = Panel(self.stdscr, h_49_pct, w_30_pct+w_55_pct, 0, w_15_pct, title='History')
+		self['stage']   = Panel(self.stdscr, h_25_pct, w_30_pct, h_49_pct, w_15_pct, title='Staging Area')
+		self['changes'] = Panel(self.stdscr, h_26_pct, w_30_pct, h_49_pct+h_25_pct, w_15_pct, title='Local Changes')
+		self['diff']    = Panel(self.stdscr, h_51_pct, w_55_pct, h_49_pct, w_15_pct+w_30_pct, title='Diff View')
 
 		self['changes'].rungit = rungit.git_changed
 		self['stage'].rungit = rungit.git_staged
@@ -51,7 +50,6 @@ class PanelManager(OrderedDict):
 		self['diff'].rungit = rungit.git_diff
 
 	def toggle(self, reverse=False):
-		# TODO: add a reverse cycling
 		it = cycle(sorted(self.iteritems(), reverse=reverse))
 		for k, panel in it:
 			if panel.active:
@@ -59,6 +57,7 @@ class PanelManager(OrderedDict):
 				return next(it)[1].activate()
 
 	def display(self):
+		curses.curs_set(0)
 		active = None
 		for k, panel in self.iteritems():
 			panel.display()
@@ -70,10 +69,10 @@ class PanelManager(OrderedDict):
 class Panel(object):
 	"""Encapsulates a window
 	"""
-	def __init__(self, stdscr, height, width, y, x, border='bounding'):
+	def __init__(self, stdscr, height, width, y, x, border='bounding', title=''):
 		self.content = []
 		self.window = stdscr.derwin(height, width, y, x)
-		self.border = border
+		self.title = title
 		self.H, self.W = self.window.getmaxyx()
 		self.T, self.L, self.B, self.R = 0, 0, height-1, width-1 # relative
 		self.CNT_T, self.CNT_L, self.CNT_B, self.CNT_R, self.CNT_H, self.CNT_W = self.T+1, self.L+1, self.B-1, self.R-1, height-2, width-2
@@ -98,16 +97,19 @@ class Panel(object):
 			y = i+self.CNT_T
 			short = self.shorten(line, self.W-3)
 			self.window.addnstr(y, self.CNT_L, short, self.W-3)
+			if self.active and self.cursor_y == y:
+				self.window.chgat(y, self.CNT_L, self.CNT_R, curses.A_BOLD)
 			if self.selected != -1 and y == self.selected - self.topLineNum:
 				self.window.chgat(y, self.CNT_L, self.CNT_R, curses.A_REVERSE)
 			# TODO: need to handle case of last line fulfilled with scrolling disabled
 
 	def draw_borders(self):
-		if self.active:
-			self.window.box()
-		else:
-			self.window.border( ' ', ' ', ' ', ' ',
-				curses.ACS_BSSB, curses.ACS_BBSS, curses.ACS_SSBB, curses.ACS_SBBS)
+		self.window.box()
+		if self.title:
+			self.window.addnstr(self.T, self.L+2, ' ' + self.title + ' ', self.W-4)
+			if self.active:
+				self.window.addnstr(self.T, self.L+2, '[' + self.title + ']', self.W-2)
+				self.window.chgat(self.T, self.L+2, len(self.title)+2, curses.A_BOLD)
 		sb = int(self.topLineNum * self.CNT_H / (max(len(self.content) - self.CNT_H, 1)))
 		if len(self.content) > self.CNT_H:
 			if sb < self.CNT_T: sb = sb + self.CNT_T
@@ -183,14 +185,19 @@ class Panel(object):
 			self._move_cursor()
 		elif self.topLineNum >= 1:
 			self.topLineNum -= 1
-			self.display()
+		else:
+			return
+		self.display()
+
 	def move_down(self):
 		if self.cursor_y < self.CNT_B and self.cursor_y < len(self.content):
 			self.cursor_y += 1
 			self._move_cursor()
 		elif self.topLineNum + self.CNT_H < len(self.content):
 			self.topLineNum += 1
-			self.display()
+		else:
+			return
+		self.display()
 
 	def _move_cursor(self):
 		self.window.move(self.cursor_y, self.cursor_x)
