@@ -42,7 +42,11 @@ def git_branch():
 
 def git_diff(path):
 	data = run('git diff -- %s' % path)
-	return data[4:]
+	data2 = []
+	# Convert tabs to spaces (2 spaces per tab)
+	for line in data[4:]:
+		data2.append((2*' ').join(line.split('\t')))
+	return data2
 
 if __name__ == '__main__':
 	print git_changed()

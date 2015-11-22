@@ -15,11 +15,10 @@ def keyloop(stdscr):
 	w.event_handler.subscribe(panels['stage'].handle_event)
 	w.event_handler.subscribe(panels['loghist'].handle_event)
 	w.event_handler.subscribe(panels['hier'].handle_event)
-	# w.event_handler.subscribe(panels['diff'].handle_event)
+	w.event_handler.subscribe(panels['diff'].handle_event)
 	w.start()
 
 	while True:
-		# active.debug()
 		c = stdscr.getch()
 		if 0<c<256:
 			c = chr(c)
