@@ -16,6 +16,9 @@ def keyloop(stdscr):
 	w.event_handler.subscribe(panels['loghist'].handle_event)
 	w.event_handler.subscribe(panels['hier'].handle_event)
 	w.event_handler.subscribe(panels['diff'].handle_event)
+
+	w.event_handler.fire()
+
 	w.start()
 
 	while True:
