@@ -77,11 +77,11 @@ class Panel(object):
 		self.H, self.W = self.window.getmaxyx()
 		self.T, self.L, self.B, self.R = 0, 0, height-1, width-1 # relative
 		self.CNT_T, self.CNT_L, self.CNT_B, self.CNT_R, self.CNT_H, self.CNT_W = self.T+1, self.L+1, self.B-1, self.R-1, height-2, width-2
-		self.cursor_y, self.cursor_x = self.CNT_T, self.CNT_L
+		self.cursor_y, self.cursor_x = self.CNT_T, self.CNT_L # Window display-relative cursor,
 		self.middle = (self.H//2, self.W//2)
 		self.active = False
 		self.topLineNum = 0
-		self.selected = -1
+		self.selected = -1 # Content-relative cursor
 		self.load_content()
 
 	def display(self):
@@ -100,7 +100,7 @@ class Panel(object):
 			self.window.addnstr(y, self.CNT_L, short, self.W-3)
 			if self.active and self.cursor_y == y:
 				self.window.chgat(y, self.CNT_L, self.CNT_R, curses.A_BOLD)
-			if self.selected != -1 and y == self.selected - self.topLineNum:
+			if self.selected != -1 and y == self.selected + self.CNT_T - self.topLineNum:
 				self.window.chgat(y, self.CNT_L, self.CNT_R, curses.A_REVERSE)
 			# TODO: need to handle case of last line fulfilled with scrolling disabled
 
@@ -132,7 +132,7 @@ class Panel(object):
 		self.display()
 
 	def select(self):
-		self.selected = -1 if self.cursor_y == self.selected else self.cursor_y
+		self.selected = -1 if self.cursor_y == self.selected + self.CNT_T else self.cursor_y - self.CNT_T + self.topLineNum
 		self.display()
 
 	def activate(self):
@@ -239,14 +239,14 @@ class ChangesPanel(Panel):
 		self.selected_file = ''
 		self.hovered_file = ''
 
-	def select(self):
-		self.selected = -1 if self.cursor_y == self.selected else self.cursor_y
-		if self.selected != -1:
-			self.selected_file = self.content[self.selected].split()[1]
-			#TODO: fire a rungit.git_diff(self.selected_file) event to DiffView
-			#TODO: next step, fire git_diff on hovering, and git_action_stage(file) on selection
-			#TODO: next step, fire git_diff only when hovering for a given delay (0.5 s)
-		self.display()
+	# def select(self):
+	# 	self.selected = -1 if self.cursor_y-self.CNT_T+self.topLineNum == self.selected else self.cursor_y-self.CNT_T+self.topLineNum
+	# 	if self.selected != -1:
+	# 		self.selected_file = self.content[self.selected].split()[1]
+	# 		#TODO: fire a rungit.git_diff(self.selected_file) event to DiffView
+	# 		#TODO: next step, fire git_diff on hovering, and git_action_stage(file) on selection
+	# 		#TODO: next step, fire git_diff only when hovering for a given delay (0.5 s)
+	# 	self.display()
 
 	def _move_cursor(self):
 		self.hovered_file = self.content[self.cursor_y-1+self.topLineNum].split()[1]
