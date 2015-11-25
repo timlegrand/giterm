@@ -50,7 +50,7 @@ class DiffViewPanel(Panel):
 
 	def __init__(self, *args, **kwargs):
 		super(DiffViewPanel, self).__init__(*args, **kwargs)
-		self.selected_file = 'panel.py'
+		self.selected_file = 'gui.py'
 
 	def handle_event(self, event):
 		self.content = self.rungit(self.selected_file)

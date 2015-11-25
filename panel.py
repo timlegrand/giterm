@@ -3,6 +3,9 @@
 import curses
 from itertools import cycle
 from collections import OrderedDict
+import locale
+locale.setlocale(locale.LC_ALL, '')
+code = locale.getpreferredencoding()
 
 class PanelManager(OrderedDict):
 	def __init__(self, stdscr):
@@ -77,8 +80,11 @@ class Panel(object):
 			self.window.addnstr(sb, self.R, 'o', 1)
 
 	def shorten(self, string, size):
-		if len(string) > size:
-			return string[:size-3] + '...'
+		# Is that really efficient? Shouldn't we store the raw data in self.content instead?
+		raw = string.decode(code)
+		if len(raw) > size:
+			res = raw[:size-3]
+			return res.encode(code) + '...'
 		return string
 
 	def load_content(self):
