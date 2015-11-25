@@ -36,8 +36,45 @@ def git_history():
 	data = run('git log --pretty=oneline --abbrev-commit --graph --decorate')
 	return data
 
-def git_branch():
-	data = run('git branch -a')
+def git_branches():
+	data = run('git branch')
+	for i, line in enumerate(data):
+		data[i] = line[2:] if line[0] != '*' else line[2:] + '*'
+	indent(data, 2)
+	data.insert(0, 'Branches:')
+	return data + [' ']
+
+def git_stashes():
+	data = run('git stash list')
+	for i, line in enumerate(data):
+		data[i] = line[14:]
+	indent(data, 2)
+	data.insert(0, 'Stashes:')
+	return data + [' ']
+
+def git_remotes():
+	data = run('git remote show')
+	indent(data, 2)
+	data.insert(0, 'Remotes:')
+	return data + [' ']
+
+def git_submodules():
+	data = run('git submodule status')
+	for i, line in enumerate(data):
+		data[i] = line.split()[1]
+	indent(data, 2)
+	data.insert(0, 'Submodules:')
+	return data + [' ']
+
+def indent(data, n):
+	for i, line in enumerate(data):
+		data[i] = '└' + ' ' * (n-1) + line
+
+def git_hierarchies():
+	data = git_branches()
+	data += git_stashes()
+	data += git_remotes()
+	data += git_submodules()
 	return data
 
 def git_diff(path):
@@ -54,5 +91,5 @@ if __name__ == '__main__':
 	print git_changed()
 	print git_staged()
 	print git_history()
-	print git_branch()
+	print git_hierarchies()
 	print git_diff(path='panel.py')

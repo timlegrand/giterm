@@ -57,14 +57,18 @@ class Panel(object):
 		top = self.topLineNum
 		bottom = self.topLineNum + self.CNT_H
 		for i, line in enumerate(self.content[top:bottom]):
-			y = i+self.CNT_T
-			short = self.shorten(line, self.W-3)
-			self.window.addnstr(y, self.CNT_L, short, self.W-3)
+			y = i + self.CNT_T
+			self.add_content_line(y, line)
 			if self.active and self.cursor_y == y:
 				self.window.chgat(y, self.CNT_L, self.CNT_R, curses.A_BOLD)
 			if self.selected != -1 and y == self.selected + self.CNT_T - self.topLineNum:
 				self.window.chgat(y, self.CNT_L, self.CNT_R, curses.A_REVERSE)
 			# TODO: need to handle case of last line fulfilled with scrolling disabled
+
+	def add_content_line(self, line_num, content):
+		short, num_raw_bytes = self.shorten(content, self.CNT_W)
+		# import cursutils ; cursutils.debug(self.window)
+		self.window.addnstr(line_num, self.CNT_L, short, num_raw_bytes)
 
 	def draw_borders(self):
 		self.window.box()
@@ -80,12 +84,11 @@ class Panel(object):
 			self.window.addnstr(sb, self.R, 'o', 1)
 
 	def shorten(self, string, size):
+		printable = string.decode(code)
 		# Is that really efficient? Shouldn't we store the raw data in self.content instead?
-		raw = string.decode(code)
-		if len(raw) > size:
-			res = raw[:size-3]
-			return res.encode(code) + '...'
-		return string
+		if len(printable) > size:
+			printable = printable[:size-3] + '...'
+		return printable.encode(code), len(string)
 
 	def load_content(self):
 		for i in range(5):
