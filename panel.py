@@ -186,34 +186,3 @@ class Panel(object):
 		self.text_force_right_align(self.B, self.R, BR)
 		if refresh:
 			self.window.refresh()
-
-class DiffViewPanel(Panel):
-
-	def __init__(self, *args, **kwargs):
-		super(DiffViewPanel, self).__init__(*args, **kwargs)
-		self.selected_file = 'panel.py'
-
-	def handle_event(self, event):
-		self.content = self.rungit(self.selected_file)
-		self.display()
-
-class ChangesPanel(Panel):
-
-	def __init__(self, *args, **kwargs):
-		super(ChangesPanel, self).__init__(*args, **kwargs)
-		self.selected_file = ''
-		self.hovered_file = ''
-
-	# def select(self):
-	# 	self.selected = -1 if self.cursor_y-self.CNT_T+self.topLineNum == self.selected else self.cursor_y-self.CNT_T+self.topLineNum
-	# 	if self.selected != -1:
-	# 		self.selected_file = self.content[self.selected].split()[1]
-	# 		#TODO: fire a rungit.git_diff(self.selected_file) event to DiffView
-	# 		#TODO: next step, fire git_diff on hovering, and git_action_stage(file) on selection
-	# 		#TODO: next step, fire git_diff only when hovering for a given delay (0.5 s)
-	# 	self.display()
-
-	def _move_cursor(self):
-		self.hovered_file = self.content[self.cursor_y-1+self.topLineNum].split()[1]
-		self.window.move(self.cursor_y, self.cursor_x)
-		self.window.refresh()
