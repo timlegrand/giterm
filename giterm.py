@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import curses
-from gui import GitermPanelManager
+
 import watch
+from gui import GitermPanelManager
 
 def keyloop(stdscr):
 	panels = GitermPanelManager(stdscr)
@@ -11,12 +12,8 @@ def keyloop(stdscr):
 	panels.display()
 
 	w = watch.Watcher()
-	w.event_handler.subscribe(panels['changes'].handle_event)
-	w.event_handler.subscribe(panels['stage'].handle_event)
-	w.event_handler.subscribe(panels['loghist'].handle_event)
-	w.event_handler.subscribe(panels['hier'].handle_event)
-	w.event_handler.subscribe(panels['diff'].handle_event)
-
+	for name, panel in panels.iteritems():
+		w.event_handler.subscribe(panel.handle_event)
 	w.event_handler.fire()
 
 	w.start()

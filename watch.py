@@ -2,14 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import time
+
 import logging
+
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+from observer import Observable as Fireable
 
-import observer as cb
-
-class FileChangedHandler(FileSystemEventHandler, cb.Observable):
+class FileChangedHandler(FileSystemEventHandler, Fireable):
 
 	def on_any_event(self, event):
 		if event.src_path == "." or ".git" in event.src_path:
@@ -44,6 +44,7 @@ class Watcher(object):
 		self.observer.join()
 
 if __name__ == "__main__":
+	import time
 	watchdir = sys.argv[1] if len(sys.argv) > 1 else '.'
 	w = Watcher()
 	w.start()
