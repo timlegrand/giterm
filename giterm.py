@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import curses
-from panel import Panel, PanelManager
+from gui import GitermPanelManager
 import watch
 
 def keyloop(stdscr):
-	panels = PanelManager(stdscr)
+	panels = GitermPanelManager(stdscr)
 	active = panels['loghist'].activate()
 	panels.display()
 

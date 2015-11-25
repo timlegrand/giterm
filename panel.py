@@ -3,51 +3,11 @@
 import curses
 from itertools import cycle
 from collections import OrderedDict
-import rungit
 
 class PanelManager(OrderedDict):
 	def __init__(self, stdscr):
 		super(PanelManager, self).__init__()
 		self.stdscr = stdscr
-		self.create_panels()
-
-	def create_panels(self):
-		"""Creates a SourceTree-like interface:
-	┌────────┐┌────────────────────────────────┐
-	│Branches││Log history                     │
-	│> master││                                │
-	│> devel ││                                │
-	│        ││                                │
-	│Remotes ││                                │
-	│> origin│└────────────────────────────────┘
-	│        │┌───────────────┐┌───────────────┐
-	│Tags    ││ Staged files  ││               │
-	│        │└───────────────┘│ Diff of       │
-	│Stashes │┌───────────────┐│ selected file │
-	│        ││ Changed files ││               │
-	└────────┘└───────────────┘└───────────────┘
-		"""
-		height, width = self.stdscr.getmaxyx()
-		if height < 8 or width < 40:
-			raise Exception("Height and width must be at least 8x80. Currently: %sx%s" % (height, width))
-		w_15_pct = width // 7 if width // 7 > 15 else 15
-		w_30_pct = width // 3
-		w_55_pct = width - w_30_pct - w_15_pct
-		h_49_pct = height // 2
-		h_51_pct = height - h_49_pct
-		h_25_pct = h_51_pct // 2
-		h_26_pct = h_51_pct - h_25_pct
-		self['hier']    = Panel(self.stdscr, height, w_15_pct, 0, 0, title='')
-		self['loghist'] = Panel(self.stdscr, h_49_pct, w_30_pct+w_55_pct, 0, w_15_pct, title='History')
-		self['stage']   = Panel(self.stdscr, h_25_pct, w_30_pct, h_49_pct, w_15_pct, title='Staging Area')
-		self['changes'] = ChangesPanel(self.stdscr, h_26_pct, w_30_pct, h_49_pct+h_25_pct, w_15_pct, title='Local Changes')
-		self['diff']    = DiffViewPanel(self.stdscr, h_51_pct, w_55_pct, h_49_pct, w_15_pct+w_30_pct, title='Diff View')
-
-		self['changes'].rungit = rungit.git_changed
-		self['stage'].rungit = rungit.git_staged
-		self['loghist'].rungit = rungit.git_history
-		self['hier'].rungit = rungit.git_branch
-		self['diff'].rungit = rungit.git_diff
 
 	def toggle(self, reverse=False):
 		it = cycle(sorted(self.iteritems(), reverse=reverse))
@@ -65,7 +25,6 @@ class PanelManager(OrderedDict):
 				active = panel
 		if active:
 			self.stdscr.move(*active.getcontentyx())
-
 
 class Panel(object):
 	"""Encapsulates a window
