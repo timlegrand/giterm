@@ -37,9 +37,9 @@ class Panel(object):
 		self.window = stdscr.derwin(height, width, y, x)
 		self.title = title
 		self.H, self.W = self.window.getmaxyx()
-		self.T, self.L, self.B, self.R = 0, 0, height-1, width-1 # relative
+		self.T, self.L, self.B, self.R = 0, 0, height-1, width-1 # Window-relative
 		self.CNT_T, self.CNT_L, self.CNT_B, self.CNT_R, self.CNT_H, self.CNT_W = self.T+1, self.L+1, self.B-1, self.R-1, height-2, width-2
-		self.cursor_y, self.cursor_x = self.CNT_T, self.CNT_L # Window display-relative cursor,
+		self.cursor_y, self.cursor_x = self.CNT_T, self.CNT_L # Window-relative cursor
 		self.middle = (self.H//2, self.W//2)
 		self.active = False
 		self.topLineNum = 0
@@ -97,7 +97,8 @@ class Panel(object):
 		self.display()
 
 	def select(self):
-		self.selected = -1 if self.cursor_y == self.selected + self.CNT_T else self.cursor_y - self.CNT_T + self.topLineNum
+		hovered = self.topLineNum + self.cursor_y - self.CNT_T
+		self.selected = -1 if self.selected == hovered else hovered
 		self.display()
 
 	def activate(self):
@@ -129,7 +130,7 @@ class Panel(object):
 	def text_force_right_align(self, y, x, string):
 		'''Forces right-aligned text to be printed
 		until the last char position of the panel
-		even with scrolling disabled''' 
+		even with scrolling disabled'''
 		try:
 			self.window.addstr(y, x-len(string)+1, string)
 		except curses.error:

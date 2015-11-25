@@ -37,47 +37,43 @@ class GitermPanelManager(PanelManager):
 		self['hier']    = Panel(self.stdscr, height, w_15_pct, 0, 0, title='')
 		self['loghist'] = Panel(self.stdscr, h_49_pct, w_30_pct+w_55_pct, 0, w_15_pct, title='History')
 		self['stage']   = Panel(self.stdscr, h_25_pct, w_30_pct, h_49_pct, w_15_pct, title='Staging Area')
-		self['changes'] = ChangesPanel(self.stdscr, h_26_pct, w_30_pct, h_49_pct+h_25_pct, w_15_pct, title='Local Changes')
+		self['changes'] = ChangesPanel(self, self.stdscr, h_26_pct, w_30_pct, h_49_pct+h_25_pct, w_15_pct, title='Local Changes')
 		self['diff']    = DiffViewPanel(self.stdscr, h_51_pct, w_55_pct, h_49_pct, w_15_pct+w_30_pct, title='Diff View')
 
 		self['changes'].rungit = rungit.git_changed
-		self['stage'].rungit = rungit.git_staged
+		self['stage'].rungit   = rungit.git_staged
 		self['loghist'].rungit = rungit.git_history
-		self['hier'].rungit = rungit.git_branch
-		self['diff'].rungit = rungit.git_diff
+		self['hier'].rungit    = rungit.git_branch
+		self['diff'].rungit    = rungit.git_diff
 
 class DiffViewPanel(Panel):
 
 	def __init__(self, *args, **kwargs):
 		super(DiffViewPanel, self).__init__(*args, **kwargs)
-		self.selected_file = 'gui.py'
+		self.default_title = self.title
 
-	def handle_event(self, event):
-		self.content = self.rungit(self.selected_file)
+	def handle_event(self, filepath):
+		self.content = self.rungit(filepath)
+		self.title = ": " + filepath if type(filepath) == str else ''
+		self.title = self.default_title + self.title
 		self.display()
 
 class ChangesPanel(Panel):
 
-	def __init__(self, *args, **kwargs):
+	def __init__(self, parent, *args, **kwargs):
 		super(ChangesPanel, self).__init__(*args, **kwargs)
-		self.selected_file = ''
-		self.hovered_file = ''
+		self.parent = parent
+		self.default_title = self.title
 
-	# def select(self):
-	# 	self.selected = -1 if self.cursor_y == self.selected + self.CNT_T else self.cursor_y - self.CNT_T + self.topLineNum
-	# 	if self.selected != -1:
-	# 		self.selected_file = self.content[self.selected].split()[1]
-	# 		#TODO: fire a rungit.git_diff(self.selected_file) event to DiffView
-	# 		#TODO: next step, fire git_diff on hovering, and git_action_stage(file) on selection
-	# 		#TODO: next step, fire git_diff only when hovering for a given delay (0.5 s)
-	# 	self.display()
-
-	# # For debug purposes only
-	# def draw_content(self):
-	# 	super(ChangesPanel, self).draw_content()
-	# 	self.window.addnstr(self.T, self.L, self.selected_file, self.W-1)
-
-	def _move_cursor(self):
-		self.hovered_file = self.content[self.cursor_y-1+self.topLineNum].split()[1]
-		self.window.move(self.cursor_y, self.cursor_x)
-		self.window.refresh()
+	def select(self):
+		hovered = self.topLineNum + self.cursor_y - self.CNT_T
+		self.selected = -1 if self.selected == hovered else hovered
+		if self.selected != -1:
+			selected_file = self.content[self.selected].split()[1]
+			self.parent['diff'].handle_event(selected_file)
+			#TODO: fire a rungit.git_diff(self.selected_file) event to DiffView
+			#TODO: next step, fire git_diff on hovering, and git_action_stage(file) on selection
+			#TODO: next step, fire git_diff only when hovering for a given delay (0.5 s)
+		else:
+			self.parent['diff'].handle_event(None) # Force refresh
+		self.display()

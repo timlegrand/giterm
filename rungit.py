@@ -41,6 +41,8 @@ def git_branch():
 	return data
 
 def git_diff(path):
+	if not path:
+		return []
 	data = run('git diff -- %s' % path)
 	data2 = []
 	# Convert tabs to spaces (2 spaces per tab)
