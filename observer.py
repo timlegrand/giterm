@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+
 class Event(object):
     def __init__(self, **kwargs):
         for k, v in kwargs.iteritems():
@@ -12,7 +13,7 @@ class Observable(object):
 
     def subscribe(self, callback):
         self.callbacks.add(callback)
-        
+
     def unsubscribe(self, callback):
         self.callbacks.discard(callback)
 
