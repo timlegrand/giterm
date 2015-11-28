@@ -71,18 +71,21 @@ class Changes(Panel):
         self.parent = parent
         self.default_title = self.title
 
+    def filename_from_linenum(self, linenum):
+        return self.content[linenum].split()[1]
+
+    def _move_cursor(self):
+        hovered = self.topLineNum + self.cursor_y - self.CT
+        self.parent['diff'].handle_event(self.filename_from_linenum(hovered))
+        # TODO: fire git_diff only when hovering for a given delay (0.5 s)
+        super(Changes, self)._move_cursor()
+
     def select(self):
         hovered = self.topLineNum + self.cursor_y - self.CT
-        self.selected = -1 if self.selected == hovered else hovered
-        if self.selected != -1:
-            selected_file = self.content[self.selected].split()[1]
-            self.parent['diff'].handle_event(selected_file)
-            # TODO: next step, fire git_diff on hovering and
-            # git_action_stage(file) on selection
-            # TODO: next step, fire git_diff only when hovering
-            # for a given delay (0.5 s)
-        else:
-            self.parent['diff'].handle_event(None)  # Force refresh
+        self.selected_line = -1 if self.selected_line == hovered else hovered
+        if self.selected_line != -1:
+            self.selected_file = self.filename_from_linenum(self.selected_line)
+            # TODO: next step, git_action_stage(file) on selection?
         self.display()
 
 
@@ -98,8 +101,8 @@ class Hierarchies(Panel):
             self.add_content_line(y, line)
             if self.active and self.cursor_y == y or current:
                 self.window.chgat(y, self.CL, self.CR, curses.A_BOLD)
-            if self.selected != -1 and\
-                    y == self.selected + self.CT - self.topLineNum:
+            if self.selected_line != -1 and\
+                    y == self.selected_line + self.CT - self.topLineNum:
                 self.window.chgat(y, self.CL, self.CR, curses.A_REVERSE)
             # TODO: need to handle case of last line fulfilled
             # with scrolling disabled

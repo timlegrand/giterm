@@ -32,7 +32,15 @@ class PanelManager(OrderedDict):
 
 
 class Panel(object):
-    """Encapsulates a window
+    """Encapsulates a (sub-)window.
+             < W >
+    0,0▒▒▒▒▒ T ▒▒▒▒▒▒▒▒  <── border
+    ▒       CT        ▒  ┐
+  ^ ▒CL             CR▒  │ content goes from
+  H L                 R  │ (CT, CL) to
+  v ▒cursor(y,x)▒     ▒  │ (CB, CR)
+    ▒       CB        ▒  ┘
+    ▒▒▒▒▒▒▒▒ B ▒▒▒▒▒H,W
     """
     def __init__(self, stdscr, h, w, y, x, title=''):
         self.content = []
@@ -46,7 +54,7 @@ class Panel(object):
         self.middle = (self.H//2, self.W//2)
         self.active = False
         self.topLineNum = 0
-        self.selected = -1  # Content-relative cursor
+        self.selected_line = -1  # Content-relative cursor
         self.load_content()
 
     def display(self):
@@ -64,8 +72,8 @@ class Panel(object):
             self.add_content_line(y, line)
             if self.active and self.cursor_y == y:
                 self.window.chgat(y, self.CL, self.CR, curses.A_BOLD)
-            if (self.selected != -1 and
-                    y == self.selected + self.CT - self.topLineNum):
+            if (self.selected_line != -1 and
+                    y == self.selected_line + self.CT - self.topLineNum):
                 self.window.chgat(y, self.CL, self.CR, curses.A_REVERSE)
             # TODO: need to handle case of last line fulfilled when
             # scrolling disabled
@@ -111,7 +119,7 @@ class Panel(object):
 
     def select(self):
         hovered = self.topLineNum + self.cursor_y - self.CT
-        self.selected = -1 if self.selected == hovered else hovered
+        self.selected_line = -1 if self.selected_line == hovered else hovered
         self.display()
 
     def activate(self):
