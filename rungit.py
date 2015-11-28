@@ -93,6 +93,8 @@ def git_diff(path):
     if not path:
         return []
     data = run('git diff -- %s' % path)
+    if not data:
+        data = run('git diff -- /dev/null %s' % path)
     data2 = []
     # Convert tabs to spaces (2 spaces per tab)
     for line in data[4:]:
