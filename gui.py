@@ -2,6 +2,7 @@
 import curses
 
 from panel import Panel, PanelManager
+from postponer import Postponer
 import rungit
 
 
@@ -70,14 +71,15 @@ class Changes(Panel):
         super(Changes, self).__init__(*args, **kwargs)
         self.parent = parent
         self.default_title = self.title
+        self.postponer = Postponer(timeout_in_seconds=0.4)
 
     def filename_from_linenum(self, linenum):
         return self.content[linenum].split()[1]
 
     def _move_cursor(self):
         hovered = self.topLineNum + self.cursor_y - self.CT
-        self.parent['diff'].handle_event(self.filename_from_linenum(hovered))
-        # TODO: fire git_diff only when hovering for a given delay (0.5 s)
+        self.postponer.set(action=self.parent['diff'].handle_event,
+            args=[self.filename_from_linenum(hovered)])
         super(Changes, self)._move_cursor()
 
     def select(self):

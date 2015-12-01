@@ -33,7 +33,7 @@ class PanelManager(OrderedDict):
 
 class Panel(object):
     """Encapsulates a (sub-)window.
-             < W >
+           < W >
     0,0▒▒▒▒▒ T ▒▒▒▒▒▒▒▒  <── border
     ▒       CT        ▒  ┐
   ^ ▒CL             CR▒  │ content goes from
