@@ -7,7 +7,7 @@ class Event(object):
             setattr(self, k, v)
 
 
-class Observable(object):
+class Trigger(object):
     def __init__(self):
         self.callbacks = set()
 
@@ -21,3 +21,19 @@ class Observable(object):
         e = Event(source=self, **attrs)
         for fn in self.callbacks:
             fn(e)
+
+
+if __name__ == '__main__':
+
+    def callback1(event):
+        print 'Callback #1 got fired with: ' + event.message
+
+    def callback2(event):
+        print 'Callback #2 got fired with: ' + event.message
+
+    o = Trigger()
+    o.subscribe(callback1)
+    o.subscribe(callback2)
+    o.fire(message='first trigger')
+    o.unsubscribe(callback1)
+    o.fire(message='second trigger')

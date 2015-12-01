@@ -7,20 +7,20 @@ import logging
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
-from observer import Observable as Fireable
+from observer import Trigger
 
-GIT_BLACK_LIST = ['.', '.git/']
+GIT_BLACK_LIST = ['.', '.git']
 GIT_WHITE_LIST = ['.gitignore', '.gitconfig', '.gitmodules']
 
 
-class FileChangedHandler(FileSystemEventHandler, Fireable):
+class FileChangedHandler(FileSystemEventHandler, Trigger):
 
     def on_any_event(self, event):
         path = event.src_path
         if path.startswith('./'):
             path = path[2:]
         for forbidden in GIT_BLACK_LIST:
-            if forbidden in path:
+            if path.startswith(forbidden):
                 if path not in GIT_WHITE_LIST:
                     return
                 else:
