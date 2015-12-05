@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import subprocess
+import os
 
 
 def run(cmd):
@@ -102,22 +103,23 @@ def git_diff(path):
     return data2
 
 
-def git_stage_file(path):
+def run_simple_command(command, path):
     if not path:
         raise ArgumentException('Cannot stage without a file name.')
-    command = 'git add -- %s' % path
-    error = run(command)
-    if error:
-        raise Exception('Error while running "%s"' % command)
+    command = 'git %s -- %s' % (command, path)
+    with open(os.devnull, "w") as dev_null:
+        error = subprocess.call(command.split(),
+            stdout=dev_null, stderr=subprocess.STDOUT)
+        if error != 0:
+            raise Exception('Error %s while running "%s"' % (error, command))
+
+
+def git_stage_file(path):
+    run_simple_command('add', path)
 
 
 def git_unstage_file(path):
-    if not path:
-        raise ArgumentException('Cannot stage without a file name.')
-    command = 'git reset -- %s' % path
-    error = subprocess.call(command.split())
-    if error:
-        raise Exception('Error while running "%s"' % command)
+    run_simple_command('reset', path)
 
 
 if __name__ == '__main__':

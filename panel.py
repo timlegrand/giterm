@@ -9,6 +9,7 @@ code = locale.getpreferredencoding()
 
 
 class PanelManager(OrderedDict):
+
     def __init__(self, stdscr):
         super(PanelManager, self).__init__()
         self.stdscr = stdscr
@@ -42,6 +43,7 @@ class Panel(object):
     ▒       CB        ▒  ┘
     ▒▒▒▒▒▒▒▒ B ▒▒▒▒▒H,W
     """
+
     def __init__(self, stdscr, h, w, y, x, title=''):
         self.content = []
         self.window = stdscr.derwin(h, w, y, x)
@@ -54,14 +56,16 @@ class Panel(object):
         self.middle = (self.H//2, self.W//2)
         self.active = False
         self.topLineNum = 0
-        self.selected_line = -1  # Content-relative cursor
+        self.selected_line = -1  # Content-relative line number
+        self.hovered_line = 0  # Content-relative line number
         self.load_content()
 
     def display(self):
-        self.window.clear()
+        self.window.erase()
         self.draw_borders()
         self.draw_content()
-        self._move_cursor()
+        self.draw_hover()
+        self.draw_selected()
         self.window.refresh()
 
     def draw_content(self):
@@ -70,17 +74,20 @@ class Panel(object):
         for i, line in enumerate(self.content[top:bottom]):
             y = i + self.CT
             self.add_content_line(y, line)
-            if self.active and self.cursor_y == y:
-                self.window.chgat(y, self.CL, self.CR, curses.A_BOLD)
-            if (self.selected_line != -1 and
-                    y == self.selected_line + self.CT - self.topLineNum):
-                self.window.chgat(y, self.CL, self.CR, curses.A_REVERSE)
             # TODO: need to handle case of last line fulfilled when
             # scrolling disabled
 
+    def draw_hover(self):
+        if self.active and self.cursor_y >= self.CT and self.cursor_y <= self.CB:
+            self.window.chgat(self.cursor_y, self.CL, self.CR, curses.A_BOLD)
+
+    def draw_selected(self):
+        if self.selected_line != -1:
+            y = self.selected_line + self.CT - self.topLineNum
+            self.window.chgat(y, self.CL, self.CR, curses.A_REVERSE)
+
     def add_content_line(self, line_num, content):
         short, num_raw_bytes = self.shorten(content, self.CW)
-        # import cursutils ; cursutils.debug(self.window)
         self.window.addnstr(line_num, self.CL, short, num_raw_bytes)
 
     def draw_borders(self):
@@ -118,8 +125,14 @@ class Panel(object):
         self.display()
 
     def select(self):
-        hovered = self.topLineNum + self.cursor_y - self.CT
-        self.selected_line = -1 if self.selected_line == hovered else hovered
+        if self.hovered_line == self.selected_line:
+            self.selected_line = -1
+        else:
+            self.selected_line = self.hovered_line
+        self.display()
+
+    def unselect(self):
+        self.selected_line = -1
         self.display()
 
     def activate(self):
@@ -160,36 +173,36 @@ class Panel(object):
     def move_left(self):
         if self.cursor_x > self.CL:
             self.cursor_x -= 1
-            self._move_cursor()
+            self.move_cursor()
 
     def move_right(self):
         if self.cursor_x < self.CR:
             self.cursor_x += 1
-            self._move_cursor()
+            self.move_cursor()
 
     def move_up(self):
         if self.cursor_y > self.CT:
             self.cursor_y -= 1
-            self._move_cursor()
-        elif self.topLineNum >= 1:
+        elif self.topLineNum > 0:
             self.topLineNum -= 1
         else:
             return
+        self.move_cursor()
         self.display()
 
     def move_down(self):
         if self.cursor_y < self.CB and self.cursor_y < len(self.content):
             self.cursor_y += 1
-            self._move_cursor()
         elif self.topLineNum + self.CH < len(self.content):
             self.topLineNum += 1
         else:
             return
+        self.move_cursor()
         self.display()
 
-    def _move_cursor(self):
+    def move_cursor(self):
+        self.hovered_line = self.topLineNum + self.cursor_y - self.CT
         self.window.move(self.cursor_y, self.cursor_x)
-        self.window.refresh()
 
     def debug(self, refresh=True):
         self.window.box(curses.ACS_CKBOARD, curses.ACS_CKBOARD)
