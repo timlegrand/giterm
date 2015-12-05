@@ -14,7 +14,10 @@ def keyloop(stdscr):
     w = watch.Watcher()
     for name, panel in panels.iteritems():
         w.event_handler.subscribe(panel.handle_event)
+
+    # Initialize contents
     w.event_handler.fire()
+    panels['changes'].request_diff_in_diff_view()
 
     w.start()
 

@@ -95,10 +95,10 @@ class StagerUnstager(Panel):
         return self.content[linenum].split()[1]
 
     def move_cursor(self):
-        self.show_diff_in_diff_view()
+        self.request_diff_in_diff_view()
         super(StagerUnstager, self).move_cursor()
 
-    def show_diff_in_diff_view(self):
+    def request_diff_in_diff_view(self):
         if self.content:
             self.postponer.set(action=self.parent['diff'].handle_event,
                 args=[self.filename_from_linenum(self.hovered_line)])
