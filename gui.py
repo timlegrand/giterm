@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import curses
+import threading
 
 from panel import Panel, PanelManager
 from postponer import Postponer
@@ -41,7 +42,7 @@ class GitermPanelManager(PanelManager):
         h_26 = h_51 - h_25
         self['hier'] = Hierarchies(self.stdscr, height, w_20, 0, 0, title='')
         self['log'] = Panel(self.stdscr, h_49, w_30 + w_50, 0, w_20, title='History')
-        self['stage'] = Panel(self.stdscr, h_25, w_30, h_49, w_20, title='Staging Area')
+        self['stage'] = Staged(self, self.stdscr, h_25, w_30, h_49, w_20, title='Staging Area')
         self['changes'] = Changes(self, self.stdscr, h_26, w_30, h_49 + h_25, w_20, title='Local Changes')
         self['diff'] = Diff(self.stdscr, h_51, w_50, h_49, w_20 + w_30, title='Diff View')
 
@@ -52,16 +53,68 @@ class GitermPanelManager(PanelManager):
         self['diff'].rungit = rungit.git_diff
 
 
+    def stage_file(self, path):
+        rungit.git_stage_file(path)
+        self['stage'].handle_event(None)
+        self['changes'].handle_event(None)
+        self['changes'].unselect()
+
+    def unstage_file(self, path):
+        rungit.git_unstage_file(path)
+        self['stage'].handle_event(None)
+        self['stage'].unselect()
+        self['changes'].handle_event(None)
+
+
 class Diff(Panel):
 
     def __init__(self, *args, **kwargs):
         super(Diff, self).__init__(*args, **kwargs)
         self.default_title = self.title
+        self.running = threading.Lock()
 
     def handle_event(self, filepath):
+        self.running.acquire()
         self.content = self.rungit(filepath)
         self.title = ": " + filepath if type(filepath) == str else ''
         self.title = self.default_title + self.title
+        self.display()
+        self.running.release()
+
+
+class Staged(Panel):
+
+    def __init__(self, parent, *args, **kwargs):
+        super(Staged, self).__init__(*args, **kwargs)
+        self.parent = parent
+        self.default_title = self.title
+        self.postponer = Postponer(timeout_in_seconds=0.3)
+
+    def filename_from_linenum(self, linenum):
+        if len(self.content) <= linenum:
+            # TODO: log error and raise exception
+            return 'error: l.%s>%s' % (linenum, str(len(self.content)+1))
+        return self.content[linenum].split()[1]
+
+    def _move_cursor(self):
+        hovered = self.topLineNum + self.cursor_y - self.CT
+        if self.content:
+            self.postponer.set(action=self.parent['diff'].handle_event,
+                args=[self.filename_from_linenum(hovered)])
+        self.window.addstr(0, 0, str(hovered))
+        super(Staged, self)._move_cursor()
+
+    def select(self):
+        hovered = self.topLineNum + self.cursor_y - self.CT
+        self.selected_line = -1 if self.selected_line == hovered else hovered
+        if self.selected_line != -1:
+            self.selected_file = self.filename_from_linenum(self.selected_line)
+            self.cursor_y = min(self.cursor_y - 1, self.CT)
+            self.parent.unstage_file(self.selected_file)
+        self.display()
+
+    def unselect(self):
+        self.selected_line = -1
         self.display()
 
 
@@ -71,7 +124,7 @@ class Changes(Panel):
         super(Changes, self).__init__(*args, **kwargs)
         self.parent = parent
         self.default_title = self.title
-        self.postponer = Postponer(timeout_in_seconds=0.4)
+        self.postponer = Postponer(timeout_in_seconds=0.3)
 
     def filename_from_linenum(self, linenum):
         return self.content[linenum].split()[1]
@@ -87,7 +140,12 @@ class Changes(Panel):
         self.selected_line = -1 if self.selected_line == hovered else hovered
         if self.selected_line != -1:
             self.selected_file = self.filename_from_linenum(self.selected_line)
-            # TODO: next step, git_action_stage(file) on selection?
+            self.cursor_y = min(self.cursor_y - 1, self.CT)
+            self.parent.stage_file(self.selected_file)
+        self.display()
+
+    def unselect(self):
+        self.selected_line = -1
         self.display()
 
 

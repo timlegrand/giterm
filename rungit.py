@@ -102,6 +102,24 @@ def git_diff(path):
     return data2
 
 
+def git_stage_file(path):
+    if not path:
+        raise ArgumentException('Cannot stage without a file name.')
+    command = 'git add -- %s' % path
+    error = run(command)
+    if error:
+        raise Exception('Error while running "%s"' % command)
+
+
+def git_unstage_file(path):
+    if not path:
+        raise ArgumentException('Cannot stage without a file name.')
+    command = 'git reset -- %s' % path
+    error = subprocess.call(command.split())
+    if error:
+        raise Exception('Error while running "%s"' % command)
+
+
 if __name__ == '__main__':
     print git_changed()
     print git_staged()
