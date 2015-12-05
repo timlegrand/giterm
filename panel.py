@@ -79,12 +79,12 @@ class Panel(object):
 
     def draw_hover(self):
         if self.active and self.cursor_y >= self.CT and self.cursor_y <= self.CB:
-            self.window.chgat(self.cursor_y, self.CL, self.CR, curses.A_BOLD)
+            self.window.chgat(self.cursor_y, self.CL, self.CR, curses.A_REVERSE)
 
     def draw_selected(self):
         if self.selected_line != -1:
             y = self.selected_line + self.CT - self.topLineNum
-            self.window.chgat(y, self.CL, self.CR, curses.A_REVERSE)
+            self.window.chgat(y, self.CL, self.CR, curses.A_BOLD)
 
     def add_content_line(self, line_num, content):
         short, num_raw_bytes = self.shorten(content, self.CW)
