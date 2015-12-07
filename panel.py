@@ -78,7 +78,10 @@ class Panel(object):
             # scrolling disabled
 
     def draw_hover(self):
-        if self.active and self.cursor_y >= self.CT and self.cursor_y <= self.CB:
+        if (self.active and
+            self.cursor_y >= self.CT and
+            self.cursor_y <= self.CB and
+            self.content):
             self.window.chgat(self.cursor_y, self.CL, self.CR, curses.A_REVERSE)
 
     def draw_selected(self):
