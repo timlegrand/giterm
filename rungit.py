@@ -96,11 +96,65 @@ def git_diff(path):
     data = run('git diff -- %s' % path)
     if not data:
         data = run('git diff -- /dev/null %s' % path)
-    data2 = []
-    # Convert tabs to spaces (2 spaces per tab)
-    for line in data[4:]:
-        data2.append((2 * ' ').join(line.split('\t')))
-    return data2
+    hunks = chainsaw(data)
+    screen_content = []
+    for h in hunks:
+        screen_content += remove_superfluous_alineas(h)
+        screen_content.append('─' * 80)
+    return screen_content
+
+
+def chainsaw(data):
+    '''Splits diff data into diff hunks.
+    '''
+    no_header = data[4:]
+    hunks = []
+    hunk = []
+    for line in no_header:
+        if line.startswith('@@'):  # New hunk
+            if hunk:
+                hunks.append(hunk)
+                hunk = []
+        hunk.append(line)
+    if hunk:  # Last hunk if any
+        hunks.append(hunk)
+    return hunks
+
+
+def remove_superfluous_alineas(hunk):
+    min_alinea = 1000
+    for i, line in enumerate(hunk[1:]):
+        line = tabs_to_spaces(line, num_spaces=2)
+        hunk[i+1] = line
+        min_alinea = get_new_minimum_alinea(line, min_alinea, 1)
+    left_aligned_hunk = lstrip_hunk(hunk, min_alinea)
+    return left_aligned_hunk
+
+
+def tabs_to_spaces(text, num_spaces=2):
+    return (num_spaces * ' ').join(text.split('\t'))
+
+
+def get_new_minimum_alinea(line, previous_alinea, num_ignored_chars):
+    line = line[1:]  # First char is diff-specific ('+' or '-' chars)
+    lstripped_length = len(line.lstrip())
+    if lstripped_length != 0:
+        curr_alinea = len(line) - lstripped_length
+        min_alinea = min(previous_alinea, curr_alinea)
+        return min_alinea
+    return previous_alinea
+
+
+def lstrip_hunk(text, offset):
+    '''Left-shifts of 'offset' chars every line of a given 'text',
+    but saves the first character (typically '+' or '-' in diff output).
+    '''
+    result = []
+    result.append(text[0])
+    for line in text[1:]:
+        first_char = line[0]
+        result.append(line[0] + line[offset+1:])
+    return result
 
 
 def run_simple_command(command, path):
@@ -127,4 +181,5 @@ if __name__ == '__main__':
     print git_staged()
     print git_history()
     print git_hierarchies()
-    print git_diff(path='panel.py')
+    for line in git_diff(path='rungit.py'):
+        print line
