@@ -191,7 +191,6 @@ class Panel(object):
         else:
             return
         self.move_cursor()
-        self.display()
 
     def move_down(self):
         if self.cursor_y < self.CB and self.cursor_y < len(self.content):
@@ -201,11 +200,27 @@ class Panel(object):
         else:
             return
         self.move_cursor()
-        self.display()
+
+    def move_prev_page(self):
+        if self.topLineNum < self.CH:
+            self.topLineNum = 0
+        else:
+            self.topLineNum -= self.CH
+        self.hovered_line = self.topLineNum
+        self.move_cursor()
+
+    def move_next_page(self):
+        if self.topLineNum + self.CH < len(self.content):
+            self.topLineNum += self.CH
+        else:
+            return
+        self.hovered_line = self.topLineNum
+        self.move_cursor()
 
     def move_cursor(self):
         self.hovered_line = self.topLineNum + self.cursor_y - self.CT
         self.window.move(self.cursor_y, self.cursor_x)
+        self.display()
 
     def debug(self, refresh=True):
         self.window.box(curses.ACS_CKBOARD, curses.ACS_CKBOARD)

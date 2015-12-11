@@ -41,6 +41,10 @@ def keyloop(stdscr):
             active.move_down()
         elif c == curses.KEY_RIGHT:
             active.move_right()
+        elif c == curses.KEY_PPAGE:
+            active.move_prev_page()
+        elif c == curses.KEY_NPAGE:
+            active.move_next_page()
         elif c == curses.KEY_RESIZE:
             pass  # TODO: handle terminal resize properly (downsize and upsize)
         else:
