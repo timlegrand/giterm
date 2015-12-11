@@ -13,20 +13,25 @@ def git_status(staged=False):
     output = run('git status -s --porcelain')
     data = []
     for line in output:
+        path = line.split()[1]
+        full_code = line[0:2]
         if staged:
-            code = line[0:1]
+            code = full_code[0]
         else:
-            code = line[1:2]
+            code = full_code[1]
         if code in 'CRADUM':
             data.append(line)
         elif code in ' ':
             pass
         elif code in '?!':
             if not staged:
-                data.append(line)
+                if os.path.isdir(path):
+                    paths = run('find %s -type f' % path)
+                    data += [full_code + ' ' + x for x in paths]
+                else:
+                    data.append(line)
         else:
             data.append('X' + line)
-
     return data
 
 
@@ -40,6 +45,14 @@ def git_staged():
 
 def git_history():
     data = run('git log --pretty=oneline --abbrev-commit --graph --decorate')
+    return data
+
+
+def git_hierarchies():
+    data = git_branches()
+    data += git_stashes()
+    data += git_remotes()
+    data += git_submodules()
     return data
 
 
@@ -82,17 +95,9 @@ def indent(data, n):
         data[i] = '└' + ' ' * (n-1) + line
 
 
-def git_hierarchies():
-    data = git_branches()
-    data += git_stashes()
-    data += git_remotes()
-    data += git_submodules()
-    return data
-
-
 def git_diff(path):
-    if not path:
-        return []
+    if not path or type(path) is not str:
+        raise Exception('Path not supported: ' + str(path))
     data = run('git diff -- %s' % path)[4:]
     if not data:
         data = run('git diff -- /dev/null %s' % path)[5:]

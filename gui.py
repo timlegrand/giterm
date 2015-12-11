@@ -75,6 +75,8 @@ class Diff(Panel):
         self.running = threading.Lock()
 
     def handle_event(self, filepath):
+        if type(filepath) is not str:
+            return
         self.running.acquire()
         self.content = self.rungit(filepath)
         self.title = ": " + filepath if type(filepath) == str else ''

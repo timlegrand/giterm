@@ -4,7 +4,21 @@ import pdb
 import sys
 
 
-def debug(stdscr):
+screen = None
+initialized = False
+
+
+def init(stdscr):
+    global screen
+    screen = stdscr
+    global initialized
+    initialized = True
+
+def debug(stdscr=screen):
+    if not initialized:
+        raise Exception('cursutils must be initialized first')
+    if not stdscr:
+        raise Exception('stdscr must be a valid window object')
     curses.nocbreak()
     stdscr.keypad(0)
     curses.echo()
@@ -16,4 +30,6 @@ def debug(stdscr):
     debugger.interaction(users_frame, None)
 
 # Use with:
-# import cursutils ; cursutils.debug(self.window)
+# import cursutils
+# cursutils.init(stdscr)   # where stdscr is a curses window object
+# cursutils.debug(cursutils.screen)
