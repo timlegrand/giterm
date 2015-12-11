@@ -93,9 +93,9 @@ def git_hierarchies():
 def git_diff(path):
     if not path:
         return []
-    data = run('git diff -- %s' % path)
+    data = run('git diff -- %s' % path)[4:]
     if not data:
-        data = run('git diff -- /dev/null %s' % path)
+        data = run('git diff -- /dev/null %s' % path)[5:]
     hunks = chainsaw(data)
     screen_content = []
     for h in hunks:
@@ -107,10 +107,9 @@ def git_diff(path):
 def chainsaw(data):
     '''Splits diff data into diff hunks.
     '''
-    no_header = data[4:]
     hunks = []
     hunk = []
-    for line in no_header:
+    for line in data:
         if line.startswith('@@'):  # New hunk
             if hunk:
                 hunks.append(hunk)

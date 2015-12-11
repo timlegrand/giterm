@@ -43,8 +43,8 @@ class GitermPanelManager(PanelManager):
         h_26 = h_51 - h_25
         self['hier'] = Hierarchies(self.stdscr, height, w_20, 0, 0, title='')
         self['log'] = Panel(self.stdscr, h_49, w_30 + w_50, 0, w_20, title='History')
-        self['stage'] = StagingArea(self, self.stdscr, h_25, w_30, h_49, w_20, title='Staging Area')
-        self['changes'] = Changes(self, self.stdscr, h_26, w_30, h_49 + h_25, w_20, title='Local Changes')
+        self['stage'] = StagerUnstager(self, self.stdscr, h_25, w_30, h_49, w_20, title='Staging Area')
+        self['changes'] = StagerUnstager(self, self.stdscr, h_26, w_30, h_49 + h_25, w_20, title='Local Changes')
         self['diff'] = Diff(self.stdscr, h_51, w_50, h_49, w_20 + w_30, title='Diff View')
 
         self['changes'].rungit = rungit.git_changed
@@ -52,6 +52,9 @@ class GitermPanelManager(PanelManager):
         self['log'].rungit = rungit.git_history
         self['hier'].rungit = rungit.git_hierarchies
         self['diff'].rungit = rungit.git_diff
+
+        self['changes'].action = self.stage_file
+        self['stage'].action = self.unstage_file
 
     def stage_file(self, path):
         rungit.git_stage_file(path)
@@ -95,8 +98,8 @@ class StagerUnstager(Panel):
         return self.content[linenum].split()[1]
 
     def move_cursor(self):
-        self.request_diff_in_diff_view()
         super(StagerUnstager, self).move_cursor()
+        self.request_diff_in_diff_view()
 
     def request_diff_in_diff_view(self):
         if self.content:
@@ -114,20 +117,6 @@ class StagerUnstager(Panel):
             self.action(self.selected_file)
             self.unselect()
         self.display()
-
-
-class StagingArea(StagerUnstager):
-
-    def __init__(self, parent, *args, **kwargs):
-        super(StagingArea, self).__init__(parent, *args, **kwargs)
-        self.action = self.parent.unstage_file
-
-
-class Changes(StagerUnstager):
-
-    def __init__(self, parent, *args, **kwargs):
-        super(Changes, self).__init__(parent, *args, **kwargs)
-        self.action = self.parent.stage_file
 
 
 class Hierarchies(Panel):
