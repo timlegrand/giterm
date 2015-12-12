@@ -44,8 +44,31 @@ def git_staged():
 
 
 def git_history():
-    data = run('git log --pretty=oneline --abbrev-commit --graph --decorate')
-    return data
+    data = run('git log --abbrev-commit --decorate --date=iso')
+    commits = blocks(data, lambda x: x and x[:6] == 'commit')
+    output = []
+    for commit in commits:
+        sha1 = commit[0].split()[1]
+        main = commit[0].split('(', 1)
+        branches = '(' + main[1] + ' ' if len(main) == 2 else ''
+        author = commit[1].split(' ', 1)[1].lstrip()
+        date = commit[2].split(' ', 1)[1].lstrip()
+        message = [x for x in commit[3:] if x][0].lstrip()
+        line = branches + message + ' ' + author + ' ' + date + ' ' + sha1
+        output.append(line)
+    return output
+
+
+def blocks(iterable, start_pattern):
+    accumulator= []
+    for line in iterable:
+        if start_pattern(line):
+            if accumulator:
+                yield accumulator
+                accumulator= []
+        accumulator.append(line)
+    if accumulator:
+        yield accumulator
 
 
 def git_hierarchies():
@@ -101,28 +124,12 @@ def git_diff(path):
     data = run('git diff -- %s' % path)[4:]
     if not data:
         data = run('git diff -- /dev/null %s' % path)[5:]
-    hunks = chainsaw(data)
+    hunks = blocks(data, lambda x: x and x.startswith('@@'))
     screen_content = []
     for h in hunks:
         screen_content += remove_superfluous_alineas(h)
         screen_content.append('─' * 80)
     return screen_content
-
-
-def chainsaw(data):
-    '''Splits diff data into diff hunks.
-    '''
-    hunks = []
-    hunk = []
-    for line in data:
-        if line.startswith('@@'):  # New hunk
-            if hunk:
-                hunks.append(hunk)
-                hunk = []
-        hunk.append(line)
-    if hunk:  # Last hunk if any
-        hunks.append(hunk)
-    return hunks
 
 
 def remove_superfluous_alineas(hunk):
