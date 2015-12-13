@@ -14,6 +14,7 @@ def init(stdscr):
     global initialized
     initialized = True
 
+
 def debug(stdscr=screen):
     if not initialized:
         raise Exception('cursutils must be initialized first')
@@ -28,6 +29,7 @@ def debug(stdscr=screen):
     debugger.do_where(None)
     users_frame = sys._getframe().f_back  # One frame up, not this function
     debugger.interaction(users_frame, None)
+
 
 # Use with:
 # import cursutils

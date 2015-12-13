@@ -3,9 +3,8 @@ import curses
 
 from itertools import cycle
 from collections import OrderedDict
-import locale
-locale.setlocale(locale.LC_ALL, '')
-code = locale.getpreferredencoding()
+
+import textutils
 
 
 class PanelManager(OrderedDict):
@@ -90,7 +89,7 @@ class Panel(object):
             self.window.chgat(y, self.CL, self.CR, curses.A_BOLD)
 
     def add_content_line(self, line_num, content):
-        short, num_raw_bytes = self.shorten(content, self.CW)
+        short, num_raw_bytes = textutils.shorten(content, self.CW)
         self.window.addnstr(line_num, self.CL, short, num_raw_bytes)
 
     def draw_borders(self):
@@ -109,14 +108,6 @@ class Panel(object):
             if sidebar_pos > self.CB:
                 sidebar_pos = self.CB
             self.window.addnstr(sidebar_pos, self.R, 'o', 1)
-
-    def shorten(self, string, size):
-        printable = string.decode(code)
-        # Is that really efficient? Shouldn't we store the raw data
-        # in self.content instead?
-        if len(printable) > size:
-            printable = printable[:size-3] + '...'
-        return printable.encode(code), len(string)
 
     def load_content(self):
         for i in range(5):

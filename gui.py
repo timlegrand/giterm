@@ -105,7 +105,8 @@ class StagerUnstager(Panel):
 
     def request_diff_in_diff_view(self):
         if self.content:
-            self.postponer.set(action=self.parent['diff'].handle_event,
+            self.postponer.set(
+                action=self.parent['diff'].handle_event,
                 args=[self.filename_from_linenum(self.hovered_line)])
 
     def select(self):
