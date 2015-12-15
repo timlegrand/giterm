@@ -14,7 +14,7 @@ class GitermPanelManager(PanelManager):
         self.create_panels()
 
     def create_panels(self):
-        """Creates a SourceTree-like interface:
+        """Creates a graphical-like UI:
     ┌────────┐┌────────────────────────────────┐
     │Branches││Log history                     │
     │> master││                                │
@@ -31,7 +31,7 @@ class GitermPanelManager(PanelManager):
         """
         height, width = self.stdscr.getmaxyx()
         if height < 8 or width < 40:
-            raise Exception("Height and width must be at least 8x80.\
+            raise Exception("Height and width must be at least 8x40.\
                 Currently: %sx%s" % (height, width))
         # Following sizes are percentages (e.g. w_30 is 30% of screen width)
         w_20 = min(max(width // 5, 20), 25)
