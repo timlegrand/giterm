@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 from setuptools import setup
 
+with open("requirements.txt") as f:
+    required = [l for l in f.read().splitlines() if not l.startswith("#")]
+
 setup(
     name='giterm',
     version='0.2.0',
@@ -24,6 +27,6 @@ setup(
     license='BSD 2-Clause',
     packages=['giterm'],
     package_dir={'giterm': 'src/giterm'},
-    install_requires=['watchdog==0.8.3'],
+    install_requires=required,
     entry_points={'console_scripts': ['giterm = giterm.giterm:_main']},
     )
