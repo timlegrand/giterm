@@ -57,5 +57,9 @@ def main(stdscr):
     keyloop(stdscr)
 
 
-if __name__ == '__main__':
+def _main():
     curses.wrapper(main)
+
+
+if __name__ == '__main__':
+    _main()
