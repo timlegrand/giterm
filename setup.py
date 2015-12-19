@@ -2,7 +2,7 @@
 from setuptools import setup
 
 with open("requirements.txt") as f:
-    required = [l for l in f.read().splitlines() if not l.startswith("#")]
+    required_packages = [l for l in f.read().splitlines() if not l.startswith("#")]
 
 setup(
     name='giterm',
@@ -19,7 +19,7 @@ setup(
         'Programming Language :: Python :: 2',
         'Natural Language :: English',
         'Topic :: Software Development :: Version Control',
-    ],
+        ],
     author='Tim Legrand',
     author_email='timlegrand.perso+dev@gmail.com',
     url='https://github.com/timlegrand/giterm',
@@ -27,6 +27,6 @@ setup(
     license='BSD 2-Clause',
     packages=['giterm'],
     package_dir={'giterm': 'src/giterm'},
-    install_requires=required,
+    install_requires=required_packages,
     entry_points={'console_scripts': ['giterm = giterm.giterm:_main']},
     )
