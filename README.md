@@ -8,55 +8,47 @@ A terminal-based, graphical user interface for Git.
 Giterm shows information about the current status of your Git working copy.
 It shows in a single view:
 
-- local branches, and which branch you're currently on;
-- remote branches, and which branch the current local branch is tracking;
-- commit history, and which commit you are currently working from;
-- current changes;
-- a *diff* view of the selected file in the *changes* list.
+- local branches, and which branch you're currently on
+- remote branches, and which branch the current local branch is tracking
+- commit history, and which commit you are currently working from
+- current changes
+- a *diff* view of the selected file in the *changes* list
 
-Giterm only *shows* Git information. It **does not** support git actions like commit checkout, branch switching, staging or committing. But it could be an idea for next realeases if you're insterested!
+Giterm only *shows* Git information. It does not support git actions like commit *checkout*, *branch switching*, *staging* or *committing*. But it could be in a future realease if you want!
 
-> Well, OK, you're now able to stage/unstage files with the spacebar, just to know it's possible.
+> Well OK, you should now be able to stage/unstage files with the spacebar :)
+
+
+# Installation
+
+    pip install giterm
+
+If you don't have `pip` installed yet:
+
+    curl -s https://bootstrap.pypa.io/get-pip.py | sudo python
+    pip install giterm
 
 
 # Requirements
 
-Giterm needs the git executable to be installed and available in the PATH of your system.
-
-Giterm requires the `watchdog` module to run.
-If you have virtualenv installed, just run:
-
-	pip install -r requirements.txt
+Giterm needs the `git` executable to be installed and available in the PATH of your system.
+Others dependencies should be automatically handled by `pip`.
 
 
 # Technical background
 
-Giterm uses subprocesses to call Git shell-based commands, and parses their outputs to bring the relevant information to the UI. All apologies. Wan't to improve that? Contribute!
-
-
-# Bugs
-
-Should contain some, as it desperatly lacks of testing at this stage. I'm not proud of it, not at all.
-
-As for feature-requests, feel free to create a pull request for any bug you meet. I'd be happy to merge it as quickly as I can.
-
-
-# Contribute
-
-In an effort to continuously improve my coding, any help will be welcome, especially about:
-
-- callback/event management and inter-classes communications;
-- PEP8 and other community-inspired coding/architecture conventions;
-- unit tests;
-- Python package creation and publication;
-
-or you can pick an item from the TODO list.
+Giterm uses subprocesses to call Git shell-based commands, and parses their outputs to bring the relevant information to the UI.
 
 
 # License
 
 This software is provided under the BSD 2-Clause License.
-Please read [the LICENSE.md file](./LICENSE.md) for further information.
+Please read the[LICENSE](./LICENSE) file for further information.
+
+
+# Contribute
+
+See the [CONTRIBUTING.md](./CONTRIBUTING.md) file for how to help out.
 
 
 Many thanks for your support!
