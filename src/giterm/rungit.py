@@ -8,6 +8,9 @@ import textutils
 def run(cmd):
     process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
     output = process.communicate()[0].split('\n')
+    code = process.returncode
+    if code:
+        raise NotAGitRepositoryException('Please cd in a Git repository first.')
     return [x for x in output if x]
 
 
@@ -139,6 +142,10 @@ def git_stage_file(path):
 
 def git_unstage_file(path):
     run_simple_command('reset', path)
+
+
+class NotAGitRepositoryException(Exception):
+    pass
 
 
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
 # Giterm
 
-A terminal-based, graphical user interface for Git.
+A terminal-based GUI client for Git.
 
 
 # Features

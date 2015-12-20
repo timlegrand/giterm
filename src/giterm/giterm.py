@@ -3,6 +3,7 @@
 import curses
 
 import watch
+
 from gui import GitermPanelManager
 
 
@@ -54,7 +55,12 @@ def keyloop(stdscr):
 
 
 def main(stdscr):
-    keyloop(stdscr)
+    try:
+        keyloop(stdscr)
+    except Exception as e:
+        import cursutils
+        cursutils.finalize(stdscr)
+        print e
 
 
 def _main():

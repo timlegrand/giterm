@@ -2,13 +2,13 @@
 from setuptools import setup
 
 with open("requirements.txt") as f:
-    required_packages = [l for l in f.read().splitlines() if not l.startswith("#")]
+    required = [l for l in f.read().splitlines() if not l.startswith("#")]
 
 setup(
     name='giterm',
-    version='0.2.0',
-    description='A terminal-based, graphical user interface for Git',
-    keywords='git, gui, terminal, console',
+    version='0.2.1',
+    description='A terminal-based GUI client for Git',
+    keywords='git, client, terminal, console',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Environment :: Console :: Curses',
@@ -27,6 +27,6 @@ setup(
     license='BSD 2-Clause',
     packages=['giterm'],
     package_dir={'giterm': 'src/giterm'},
-    install_requires=required_packages,
+    install_requires=required,
     entry_points={'console_scripts': ['giterm = giterm.giterm:_main']},
     )
