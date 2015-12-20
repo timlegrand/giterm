@@ -15,19 +15,24 @@ def init(stdscr):
     initialized = True
 
 
+def finalize(stdscr):
+    curses.nocbreak()
+    stdscr.keypad(0)
+    curses.echo()
+    curses.endwin()
+
+
 def debug(stdscr=screen):
     if not initialized:
         raise Exception('cursutils must be initialized first')
     if not stdscr:
         raise Exception('stdscr must be a valid window object')
-    curses.nocbreak()
-    stdscr.keypad(0)
-    curses.echo()
-    curses.endwin()
+    finalize(stdscr)
+
     debugger = pdb.Pdb()
     debugger.reset()
     debugger.do_where(None)
-    users_frame = sys._getframe().f_back  # One frame up, not this function
+    users_frame = sys._getframe().f_back  # One frame up, outside this function
     debugger.interaction(users_frame, None)
 
 
