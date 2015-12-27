@@ -26,6 +26,7 @@ I actively welcome your pull requests. I'd be happy to merge it as quickly as I 
 At this stage, I have to admit that Giterm code is pretty dirty. I think a clean code should:
 
 - be readable and concise
+- prefer clarity over comments
 - be reusable
 - have short functions focussing each on one task...
 - ...and for which the input and output types are clearly specified
@@ -36,7 +37,7 @@ At this stage, I have to admit that Giterm code is pretty dirty. I think a clean
 - avoid premature optimization
 
 
-# Dev env
+## Dev env
 
 Giterm needs the `git` executable to be installed and available in the PATH of your system.
 
@@ -78,6 +79,6 @@ You can check the state of your dev env any time with:
 By contributing to Giterm, you agree that your contributions will be licensed under the terms given in the [LICENSE](./LICENSE) file.
 
 
-# Miscellaneous
+## Miscellaneous
 
 Recommended listening while developing: [alt-J - An Awesome Wave](https://en.wikipedia.org/wiki/An_Awesome_Wave)

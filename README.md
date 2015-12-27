@@ -37,13 +37,13 @@ Others dependencies should be automatically handled by `pip`.
 
 # Technical background
 
-Giterm uses subprocesses to call Git shell-based commands, and parses their outputs to bring the relevant information to the UI.
+Giterm uses subprocesses to call Git shell-based commands, and parses their outputs to bring the relevant information to the user interface.
 
 
 # License
 
 This software is provided under the BSD 2-Clause License.
-Please read the[LICENSE](./LICENSE) file for further information.
+Please read the [LICENSE](./LICENSE) file for further information.
 
 
 # Contribute

@@ -3,6 +3,7 @@
 import curses
 
 import watch
+import rungit
 
 from gui import GitermPanelManager
 
@@ -56,6 +57,7 @@ def keyloop(stdscr):
 
 def main(stdscr):
     try:
+        rungit.check_is_git_repository()
         keyloop(stdscr)
     except Exception as e:
         import cursutils
