@@ -8,8 +8,23 @@ import textutils
 def run(cmd):
     process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
     output = process.communicate()[0].split('\n')
+    code = process.returncode
     return [x for x in output if x]
 
+
+def run_with_error_code(cmd):
+    process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
+    output = process.communicate()[0].split('\n')
+    code = process.returncode
+    # if code:
+    #     raise Exception('Command "{0}" returned code {1}.'.format(cmd, str(code)))
+    return [x for x in output if x], code
+
+
+def check_is_git_repository():
+    output, error = run_with_error_code('git rev-parse --git-dir')
+    if error:
+        raise NotAGitRepositoryException('Please cd in a Git repository first.')
 
 def git_status(staged=False):
     output = run('git status -s --porcelain')
@@ -141,7 +156,12 @@ def git_unstage_file(path):
     run_simple_command('reset', path)
 
 
+class NotAGitRepositoryException(Exception):
+    pass
+
+
 if __name__ == '__main__':
+    print check_is_git_repository()
     print git_changed()
     print git_staged()
     print git_history()
