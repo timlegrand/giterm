@@ -65,14 +65,23 @@ def git_history():
     commits = textutils.blocks(data, lambda x: x and x[:6] == 'commit')
     output = []
     for commit in commits:
-        sha1 = commit[0].split()[1]
-        main = commit[0].split('(', 1)
-        branches = '(' + main[1] + ' ' if len(main) == 2 else ''
-        author = commit[1].split(' ', 1)[1].lstrip()
-        date = commit[2].split(' ', 1)[1].lstrip()
-        message = [x for x in commit[3:] if x][0].lstrip()
-        line = branches + message + ' ' + author + ' ' + date + ' ' + sha1
-        output.append(line)
+        for line in commit:
+            text = []
+            if line.startswith('commit'):
+                sha1 = line.split()[1]
+                main = line.split('(', 1)
+                branches = '(' + main[1] + ' ' if len(main) == 2 else ''
+            elif line.startswith('Author'):
+                author = line.split(' ', 1)[1].lstrip()
+            elif line.startswith('Date'):
+                date = line.split(' ', 1)[1].lstrip()
+            elif line.startswith('Merge'):
+                pass
+            else:
+                text.append(line)
+        message = [x for x in text if x][0].lstrip()
+        history_line = branches + message + ' ' + author + ' ' + date + ' ' + sha1
+        output.append(history_line)
     return output
 
 
