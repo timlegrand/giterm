@@ -14,7 +14,13 @@ class PanelManager(OrderedDict):
         self.stdscr = stdscr
 
     def toggle(self, reverse=False):
-        it = cycle(sorted(self.iteritems(), reverse=reverse))
+        if reverse:
+            items = self.items()
+            items.reverse()
+            reverse = OrderedDict(items)
+            it = cycle(reverse.iteritems())
+        else:
+            it = cycle(self.iteritems())
         for k, panel in it:
             if panel.active:
                 panel.deactivate()
