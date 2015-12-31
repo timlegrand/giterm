@@ -62,7 +62,10 @@ def main(stdscr):
     except Exception as e:
         import cursutils
         cursutils.finalize(stdscr)
-        print e
+        if type(e) == rungit.NotAGitRepositoryException:
+            print e
+        else:
+            raise
 
 
 def _main():
