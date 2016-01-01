@@ -97,39 +97,26 @@ def git_branches():
     data = run('git branch')
     for i, line in enumerate(data):
         data[i] = line[2:] if line[0] != '*' else line[2:] + '*'
-    indent(data, 2)
-    data.insert(0, 'Branches:')
-    return data + [' ']
+    return data
 
 
 def git_stashes():
     data = run('git stash list')
     for i, line in enumerate(data):
         data[i] = line[14:]
-    indent(data, 2)
-    data.insert(0, 'Stashes:')
-    return data + [' ']
+    return data
 
 
 def git_remotes():
     data = run('git remote show')
-    indent(data, 2)
-    data.insert(0, 'Remotes:')
-    return data + [' ']
+    return data
 
 
 def git_submodules():
     data = run('git submodule status')
     for i, line in enumerate(data):
         data[i] = line.split()[1]
-    indent(data, 2)
-    data.insert(0, 'Submodules:')
-    return data + [' ']
-
-
-def indent(data, n):
-    for i, line in enumerate(data):
-        data[i] = '└' + ' ' * (n-1) + line
+    return data
 
 
 def git_diff(path):
