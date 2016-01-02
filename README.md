@@ -19,6 +19,12 @@ Giterm only *shows* Git information. It does not support git actions like commit
 > Well OK, you should now be able to stage/unstage files with the spacebar :)
 
 
+# Usage
+
+	cd path/to/git/working/copy
+	giterm
+
+
 # Installation
 
     pip install giterm
