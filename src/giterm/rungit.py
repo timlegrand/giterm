@@ -82,6 +82,7 @@ def git_history():
         message = [x for x in text if x][0].lstrip()
         history_line = branches + message + ' ' + author + ' ' + date + ' ' + sha1
         output.append(history_line)
+    output[0] = '*' + output[0]
     return output
 
 

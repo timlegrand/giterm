@@ -51,7 +51,7 @@ class GitermPanelManager(PanelManager):
         self['stashes'] = Panel(self.stdscr, h_st, w_20, h_re+h_br, 0, title='Stashes')
         self['submodules'] = Panel(self.stdscr, h_su, w_20, h_re+h_br+h_st, 0, title='Submodules')
         # self['tags'] = StateLinePanel(self.stdscr, height, w_20, 0, 0, title='Tags')
-        self['log'] = Panel(self.stdscr, h_49, w_30 + w_50, 0, w_20, title='History')
+        self['log'] = StateLinePanel(self.stdscr, h_49, w_30 + w_50, 0, w_20, title='History')
         self['stage'] = StagerUnstager(self, self.stdscr, h_25, w_30, h_49, w_20, title='Staging Area')
         self['changes'] = StagerUnstager(self, self.stdscr, h_26, w_30, h_49 + h_25, w_20, title='Local Changes')
         self['diff'] = Diff(self.stdscr, h_51, w_50, h_49, w_20 + w_30, title='Diff View')
