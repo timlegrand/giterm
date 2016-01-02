@@ -6,7 +6,7 @@ with open("requirements.txt") as f:
 
 setup(
     name='giterm',
-    version='0.2.2',
+    version='0.2.3',
     description='A terminal-based GUI client for Git',
     keywords='git, client, terminal, console',
     classifiers=[
