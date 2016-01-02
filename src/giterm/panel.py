@@ -88,10 +88,7 @@ class Panel(object):
 
     def draw_hover(self):
         y = self.cursor_y
-        if (self.active and
-            y >= self.CT and
-            y <= self.CB and
-            self.content):
+        if (self.active and y >= self.CT and y <= self.CB and self.content):
             index = y + self.topLineNum - self.CT
             mode = curses.A_NORMAL
             if index in self.decorations:

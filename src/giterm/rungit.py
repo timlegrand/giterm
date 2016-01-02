@@ -16,8 +16,6 @@ def run_with_error_code(cmd):
     process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
     output = process.communicate()[0].split('\n')
     code = process.returncode
-    # if code:
-    #     raise Exception('Command "{0}" returned code {1}.'.format(cmd, str(code)))
     return [x for x in output if x], code
 
 
@@ -25,6 +23,7 @@ def check_is_git_repository():
     output, error = run_with_error_code('git rev-parse --git-dir')
     if error:
         raise NotAGitRepositoryException('Please cd in a Git repository first.')
+
 
 def git_status(staged=False):
     output = run('git status -s --porcelain')
@@ -70,7 +69,7 @@ def git_history():
             if line.startswith('commit'):
                 sha1 = line.split()[1]
                 main = line.split('(', 1)
-                branches = '(' + main[1] + ' ' if len(main) == 2 else ''
+                branches = '(' + main[1] if len(main) == 2 else ''
             elif line.startswith('Author'):
                 author = line.split(' ', 1)[1].lstrip()
             elif line.startswith('Date'):
@@ -80,18 +79,10 @@ def git_history():
             else:
                 text.append(line)
         message = [x for x in text if x][0].lstrip()
-        history_line = branches + message + ' ' + author + ' ' + date + ' ' + sha1
-        output.append(history_line)
+        history_line = ' '.join([branches, message, author, date, sha1])
+        output.append(history_line.lstrip())
     output[0] = '*' + output[0]
     return output
-
-
-def git_hierarchies():
-    data = git_branches()
-    data += git_stashes()
-    data += git_remotes()
-    data += git_submodules()
-    return data
 
 
 def git_branches():
@@ -117,6 +108,11 @@ def git_submodules():
     data = run('git submodule status')
     for i, line in enumerate(data):
         data[i] = line.split()[1]
+    return data
+
+
+def git_tags():
+    data = run('git tag')
     return data
 
 
@@ -162,6 +158,9 @@ if __name__ == '__main__':
     print git_changed()
     print git_staged()
     print git_history()
-    print git_hierarchies()
-    for line in git_diff(path='rungit.py'):
-        print line
+    print git_branches()
+    print git_stashes()
+    print git_remotes()
+    print git_submodules()
+    print git_tags()
+    print git_diff(path='rungit.py')
