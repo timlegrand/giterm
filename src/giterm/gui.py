@@ -137,18 +137,10 @@ class StagerUnstager(Panel):
 
 class StateLinePanel(Panel):
 
-    def draw_content(self):
-        top = self.topLineNum
-        bottom = self.topLineNum + self.CH
-        for i, line in enumerate(self.content[top:bottom]):
-            y = i + self.CT
-            current = True if line.endswith('*') else False
-            line = line[:-1] if current else line
-            self.add_content_line(y, line)
-            if self.active and self.cursor_y == y or current:
-                self.window.chgat(y, self.CL, self.CR, curses.A_BOLD)
-            if self.selected_line != -1 and\
-                    y == self.selected_line + self.CT - self.topLineNum:
-                self.window.chgat(y, self.CL, self.CR, curses.A_REVERSE)
-            # TODO: need to handle case of last line fulfilled
-            # with scrolling disabled
+    def handle_event(self, event):
+        self.content = self.rungit()
+        for i, line in enumerate(self.content):
+            if line.startswith('*'):
+                self.decorations[i] = curses.A_BOLD
+                self.content[i] = line[1:]
+        self.display()

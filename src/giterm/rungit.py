@@ -96,7 +96,7 @@ def git_hierarchies():
 def git_branches():
     data = run('git branch')
     for i, line in enumerate(data):
-        data[i] = line[2:] if line[0] != '*' else line[2:] + '*'
+        data[i] = line[2:] if line[0] != '*' else '*' + line[2:]
     return data
 
 

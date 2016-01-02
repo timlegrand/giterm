@@ -51,6 +51,7 @@ class Panel(object):
 
     def __init__(self, stdscr, h, w, y, x, title=''):
         self.content = []
+        self.decorations = {}
         self.window = stdscr.derwin(h, w, y, x)
         self.title = title
         self.H, self.W = self.window.getmaxyx()
@@ -79,20 +80,30 @@ class Panel(object):
         for i, line in enumerate(self.content[top:bottom]):
             y = i + self.CT
             self.add_content_line(y, line)
+            index = y + self.topLineNum - self.CT
+            if index in self.decorations:
+                self.window.chgat(y, self.CL, self.CR, self.decorations[index])
             # TODO: need to handle case of last line fulfilled when
             # scrolling disabled
 
     def draw_hover(self):
+        y = self.cursor_y
         if (self.active and
-            self.cursor_y >= self.CT and
-            self.cursor_y <= self.CB and
+            y >= self.CT and
+            y <= self.CB and
             self.content):
-            self.window.chgat(self.cursor_y, self.CL, self.CR, curses.A_REVERSE)
+            index = y + self.topLineNum - self.CT
+            mode = curses.A_NORMAL
+            if index in self.decorations:
+                mode = self.decorations[index]
+            self.window.chgat(y, self.CL, self.CR, mode | curses.A_REVERSE)
 
     def draw_selected(self):
         if self.selected_line != -1:
             y = self.selected_line + self.CT - self.topLineNum
-            self.window.chgat(y, self.CL, self.CR, curses.A_BOLD)
+            char = self.window.inch(y, self.CL)
+            attr = char & curses.A_ATTRIBUTES
+            self.window.chgat(y, self.CL, self.CR, attr | curses.A_BOLD)
 
     def add_content_line(self, line_num, content):
         short, num_raw_bytes = textutils.shorten(content, self.CW)
