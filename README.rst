@@ -1,9 +1,3 @@
-Giterm
-======
-
-A terminal-based GUI client for Git.
-
-
 Features
 ========
 
