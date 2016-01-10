@@ -4,10 +4,14 @@ from setuptools import setup
 with open("requirements.txt") as f:
     required = [l for l in f.read().splitlines() if not l.startswith("#")]
 
+with open('README.rst') as f:
+    long_description = f.read()
+
 setup(
     name='giterm',
-    version='0.3.1',
+    version='0.3.2',
     description='A terminal-based GUI client for Git',
+    long_description=long_description,
     keywords='git, client, terminal, console',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
