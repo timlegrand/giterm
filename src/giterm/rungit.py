@@ -64,8 +64,8 @@ def git_history():
     commits = textutils.blocks(data, lambda x: x and x[:6] == 'commit')
     output = []
     for commit in commits:
+        text = []
         for line in commit:
-            text = []
             if line.startswith('commit'):
                 sha1 = line.split()[1]
                 main = line.split('(', 1)
@@ -77,8 +77,8 @@ def git_history():
             elif line.startswith('Merge'):
                 pass
             else:
-                text.append(line)
-        message = [x for x in text if x][0].lstrip()
+                text.append(line.lstrip())
+        message = ' | '.join([x for x in text if x])
         history_line = ' '.join([branches, message, author, date, sha1])
         output.append(history_line.lstrip())
     output[0] = '*' + output[0]
@@ -166,13 +166,13 @@ class NotAGitRepositoryException(Exception):
 
 
 if __name__ == '__main__':
-    print check_is_git_repository()
-    print git_changed()
-    print git_staged()
-    print git_history()
-    print git_branches()
-    print git_stashes()
-    print git_remotes()
-    print git_submodules()
-    print git_tags()
-    print git_diff(path='rungit.py')
+    # print check_is_git_repository()
+    # print git_changed()
+    # print git_staged()
+    for l in git_history(): print l
+    # print git_branches()
+    # print git_stashes()
+    # print git_remotes()
+    # print git_submodules()
+    # print git_tags()
+    # print git_diff(path='rungit.py')
