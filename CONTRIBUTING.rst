@@ -52,11 +52,11 @@ Dev env
 Giterm needs the ``git`` executable to be installed and available in the
 PATH of your system.
 
-Giterm requires the externals modules to run. It is recommended to
+Giterm requires externals modules to run. It is recommended to
 insulate your development environment with ``virtualenv``. If you don’t
 have virtualenv installed, just run:
 
-::
+.. code-block:: bash
 
     sudo pip install -U virtualenv
     sudo pip install -U virtualenvwrapper
@@ -66,7 +66,7 @@ have virtualenv installed, just run:
 
 To set up your dev env:
 
-::
+.. code-block:: bash
 
     # download source
     # cd the source root directory
@@ -75,25 +75,25 @@ To set up your dev env:
 
 To quit the dev env:
 
-::
+.. code-block:: bash
 
     deactivate giterm
 
 To get the dev env back:
 
-::
+.. code-block:: bash
 
     workon giterm
 
 To remove the dev env:
 
-::
+.. code-block:: bash
 
     rmvirtualenv giterm
 
 You can check the state of your dev env any time with:
 
-::
+.. code-block:: bash
 
     pip freeze
 

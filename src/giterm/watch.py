@@ -8,7 +8,7 @@ from watchdog.events import FileSystemEventHandler
 
 from observer import Trigger
 
-GIT_BLACK_LIST = ['.', '.git']
+GIT_BLACK_LIST = []  # blacklisting '.git' folder prevents git events tracking
 GIT_WHITE_LIST = ['.gitignore', '.gitconfig', '.gitmodules']
 
 
