@@ -5,28 +5,27 @@ import sys
 
 
 screen = None
-initialized = False
 
 
 def init(stdscr):
     global screen
     screen = stdscr
-    global initialized
-    initialized = True
 
 
-def finalize(stdscr):
+def finalize(stdscr=None):
+    if not stdscr and not screen:
+        raise Exception('either call init() first or provide a valid window object')
+    stdscr = screen if screen and not stdscr else stdscr
     curses.nocbreak()
     stdscr.keypad(0)
     curses.echo()
     curses.endwin()
 
 
-def debug(stdscr=screen):
-    if not initialized:
-        raise Exception('cursutils must be initialized first')
-    if not stdscr:
-        raise Exception('stdscr must be a valid window object')
+def debug(stdscr=None):
+    if not stdscr and not screen:
+        raise Exception('either call init() first or provide a valid window object')
+    stdscr = screen if screen and not stdscr else stdscr
     finalize(stdscr)
 
     debugger = pdb.Pdb()
@@ -38,5 +37,5 @@ def debug(stdscr=screen):
 
 # Use with:
 # import cursutils
-# cursutils.init(stdscr)   # where stdscr is a curses window object
-# cursutils.debug(cursutils.screen)
+# cursutils.init(stdscr)   # where stdscr is a `curses` Window object
+# cursutils.debug()
