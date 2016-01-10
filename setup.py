@@ -9,7 +9,7 @@ with open('README.rst') as f:
 
 setup(
     name='giterm',
-    version='0.3.1.dev2',
+    version='0.3.2',
     description='A terminal-based GUI client for Git',
     long_description=long_description,
     keywords='git, client, terminal, console',
