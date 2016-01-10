@@ -119,9 +119,21 @@ def git_tags():
 def git_diff(path):
     if not path or type(path) is not str:
         raise Exception('Path not supported: ' + str(path))
-    data = run('git diff -- %s' % path)[4:]
+
+    cmd = 'git diff -- %s' % path
+    data, error = run_with_error_code(cmd)
     if not data:
-        data = run('git diff -- /dev/null %s' % path)[5:]
+        cmd = 'git diff -- /dev/null %s' % path
+        data, error = run_with_error_code(cmd)
+        if data:
+            data = data[5:]
+            error = 0
+    else:
+        data = data[4:]
+    # import cursutils
+    # cursutils.debug()
+    if error:
+        raise Exception('Error executing "' + cmd + '" (error = ' + str(error))
     hunks = textutils.blocks(data, lambda x: x and x.startswith('@@'))
     screen_content = []
     for h in hunks:
