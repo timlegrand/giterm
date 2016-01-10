@@ -14,7 +14,7 @@ def init(stdscr):
 
 def finalize(stdscr=None):
     if not stdscr and not screen:
-        raise Exception('either call init() first or provide a valid window object')
+        raise Exception('either call init() first or provide a window object')
     stdscr = screen if screen and not stdscr else stdscr
     curses.nocbreak()
     stdscr.keypad(0)
@@ -24,7 +24,7 @@ def finalize(stdscr=None):
 
 def debug(stdscr=None):
     if not stdscr and not screen:
-        raise Exception('either call init() first or provide a valid window object')
+        raise Exception('either call init() first or provide a window object')
     stdscr = screen if screen and not stdscr else stdscr
     finalize(stdscr)
 

@@ -166,13 +166,13 @@ class NotAGitRepositoryException(Exception):
 
 
 if __name__ == '__main__':
-    # print check_is_git_repository()
-    # print git_changed()
-    # print git_staged()
-    for l in git_history(): print l
-    # print git_branches()
-    # print git_stashes()
-    # print git_remotes()
-    # print git_submodules()
-    # print git_tags()
-    # print git_diff(path='rungit.py')
+    print check_is_git_repository()
+    print git_changed()
+    print git_staged()
+    print git_history()
+    print git_branches()
+    print git_stashes()
+    print git_remotes()
+    print git_submodules()
+    print git_tags()
+    print git_diff(path='rungit.py')
