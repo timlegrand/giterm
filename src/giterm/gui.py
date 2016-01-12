@@ -70,11 +70,13 @@ class GitermPanelManager(PanelManager):
         rungit.git_stage_file(path)
         self['stage'].handle_event(None)
         self['changes'].handle_event(None)
+        self['changes'].request_diff_in_diff_view()
 
     def unstage_file(self, path):
         rungit.git_unstage_file(path)
         self['stage'].handle_event(None)
         self['changes'].handle_event(None)
+        self['changes'].request_diff_in_diff_view()
 
 
 class Diff(Panel):
