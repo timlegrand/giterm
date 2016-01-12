@@ -89,6 +89,9 @@ class Diff(Panel):
             return
         self.running.acquire()
         self.content = self.rungit(filepath)
+        self.topLineNum = 0
+        self.selected_line = -1
+        self.hovered_line = 0
         self.title = ": " + filepath if type(filepath) == str else ''
         self.title = self.default_title + self.title
         self.display()
