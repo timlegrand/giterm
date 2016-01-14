@@ -102,7 +102,7 @@ License
 -------
 
 By contributing to Giterm, you agree that your contributions will be
-licensed under the terms given in the `LICENSE`_ file.
+licensed under the terms given in the `LICENSE file`_.
 
 
 Miscellaneous
@@ -111,5 +111,5 @@ Miscellaneous
 Recommended listening while developing: `alt-J - An Awesome Wave`_
 
 
-.. _LICENSE: ./LICENSE
+.. _LICENSE file: ./LICENSE
 .. _alt-J - An Awesome Wave: https://en.wikipedia.org/wiki/An_Awesome_Wave
