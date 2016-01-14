@@ -71,7 +71,7 @@ To set up your dev env:
     # download source
     # cd the source root directory
     mkvirtualenv giterm
-    pip install .
+    pip install -r requirements.txt
 
 To quit the dev env:
 
@@ -96,6 +96,23 @@ You can check the state of your dev env any time with:
 .. code-block:: bash
 
     pip freeze
+
+
+Testing
+-------
+
+To set up the testing/packaging env:
+
+.. code-block:: bash
+
+    mkvirtualenv packaging
+    pip install -r packaging-requirements.txt
+
+Testing:
+
+.. code-block:: bash
+
+    tox -e py27
 
 
 License
