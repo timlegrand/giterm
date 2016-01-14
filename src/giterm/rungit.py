@@ -5,10 +5,14 @@ import os
 import textutils
 
 
+class ArgumentException(Exception):
+    pass
+
+
 def run(cmd):
     process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
     output = process.communicate()[0].split('\n')
-    code = process.returncode
+    # code = process.returncode
     return [x for x in output if x]
 
 

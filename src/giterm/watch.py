@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
 
-import logging
-
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
