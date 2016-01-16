@@ -64,7 +64,6 @@ class Panel(object):
         self.topLineNum = 0
         self.selected_line = -1  # Content-relative line number
         self.hovered_line = 0  # Content-relative line number
-        self.load_content()
 
     def display(self):
         self.window.erase()
@@ -123,9 +122,8 @@ class Panel(object):
                 sidebar_pos = self.CB
             self.window.addnstr(sidebar_pos, self.R, 'o', 1)
 
-    def load_content(self):
-        for i in range(5):
-            self.content.append("Line #%s starts here and ends here." % str(i))
+    def load_content(self, new_content):
+        self.content = new_content
 
     # Callback function for remote observers
     def handle_event(self, event=None):
