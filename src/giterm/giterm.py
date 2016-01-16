@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import curses
+import argparse
 
 import watch
 import rungit
 
 from gui import GitermPanelManager
+from _version import __version_text__
 
 
 def keyloop(stdscr):
@@ -69,6 +71,10 @@ def main(stdscr):
 
 
 def _main():
+    parser = argparse.ArgumentParser(description='''A terminal-based GUI client for Git.
+        Make sure to cd in a Git working copy root folder before launching giterm.''')
+    parser.add_argument('-v', '--version', action='version', version=__version_text__)
+    args = parser.parse_args()
     curses.wrapper(main)
 
 
