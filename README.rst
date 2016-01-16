@@ -88,3 +88,8 @@ Many thanks for your support!
 
 .. _LICENSE: ./LICENSE
 .. _CONTRIBUTING.md: ./CONTRIBUTING.md
+
+
+.. image:: https://badges.gitter.im/timlegrand/giterm.svg
+   :alt: Join the chat at https://gitter.im/timlegrand/giterm
+   :target: https://gitter.im/timlegrand/giterm?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
