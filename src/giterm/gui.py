@@ -118,6 +118,10 @@ class StagerUnstager(Panel):
         super(StagerUnstager, self).move_cursor()
         self.request_diff_in_diff_view()
 
+    def handle_event(self, event=None):
+        super(StagerUnstager, self).handle_event()
+        self.request_diff_in_diff_view()
+
     def request_diff_in_diff_view(self):
         if self.content:
             self.postponer.set(

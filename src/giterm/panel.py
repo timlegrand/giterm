@@ -128,7 +128,7 @@ class Panel(object):
             self.content.append("Line #%s starts here and ends here." % str(i))
 
     # Callback function for remote observers
-    def handle_event(self, event):
+    def handle_event(self, event=None):
         self.content = self.rungit()
         self.display()
 
