@@ -1,16 +1,20 @@
-language: python
+language:
+  - python
+
 python:
-  - 2.6
   - 2.7
+
 branches:
   only:
     - master
     - develop
+
 install:
   - pip install -r packaging-requirements.txt
   - pip install -r requirements.txt
+
 script:
-  - tox -e py27
+  - tox -e py26,py27
 
 notifications:
   webhooks:
