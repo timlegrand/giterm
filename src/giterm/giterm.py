@@ -5,6 +5,7 @@ import argparse
 
 import watch
 import rungit
+import cursutils
 
 from gui import GitermPanelManager
 from _version import __version_text__
@@ -58,11 +59,11 @@ def keyloop(stdscr):
 
 
 def main(stdscr):
+    cursutils.init(stdscr)
     try:
         rungit.check_is_git_repository()
         keyloop(stdscr)
     except Exception as e:
-        import cursutils
         cursutils.finalize(stdscr)
         if type(e) == rungit.NotAGitRepositoryException:
             print e
