@@ -62,13 +62,14 @@ class Panel(object):
         self.middle = (self.H//2, self.W//2)
         self.active = False
         self.topLineNum = 0
-        self.selected_line = -1  # Content-relative line number
-        self.hovered_line = 0  # Content-relative line number
+        self.selected_line = -1  # Content-relative line number [0..N-1]
+        self.hovered_line = 0  # Content-relative line number [0..N-1]
 
     def display(self):
         self.window.erase()
         self.draw_borders()
         self.draw_content()
+        self.check_cursor_position()
         self.draw_hover()
         self.draw_selected()
         self.window.refresh()
@@ -84,6 +85,16 @@ class Panel(object):
                 self.window.chgat(y, self.CL, self.CR, self.decorations[index])
             # TODO: need to handle case of last line fulfilled when
             # scrolling disabled
+
+    def check_cursor_position(self):
+        self.allowed_cursor_range_start = min(self.CT, len(self.content))
+        self.allowed_cursor_range_end = max(
+            self.allowed_cursor_range_start,
+            len(self.content) - 1 - self.topLineNum + self.CT)
+        if self.cursor_y < self.allowed_cursor_range_start:
+            self.cursor_y = self.allowed_cursor_range_start
+        elif self.cursor_y > self.allowed_cursor_range_end:
+            self.cursor_y = self.allowed_cursor_range_end
 
     def draw_hover(self):
         y = self.cursor_y
