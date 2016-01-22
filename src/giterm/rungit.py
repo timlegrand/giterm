@@ -23,10 +23,11 @@ def run_with_error_code(cmd):
     return [x for x in output if x], code
 
 
-def check_is_git_repository():
-    output, error = run_with_error_code('git rev-parse --git-dir')
-    if error:
+def git_root_path():
+    output, error = run_with_error_code('git rev-parse --show-toplevel')
+    if error or len(output) != 1:
         raise NotAGitRepositoryException('Please cd in a Git repository first.')
+    return output[0]
 
 
 def git_status(staged=False):
@@ -148,7 +149,7 @@ def git_diff(path):
 
 def run_simple_command(command, path):
     if not path:
-        raise ArgumentException('Cannot stage without a file name.')
+        raise ArgumentException('File name missing.')
     command = 'git %s -- %s' % (command, path)
     with open(os.devnull, "w") as dev_null:
         error = subprocess.call(command.split(),
@@ -170,7 +171,7 @@ class NotAGitRepositoryException(Exception):
 
 
 if __name__ == '__main__':
-    print check_is_git_repository()
+    print git_root_path()
     print git_changed()
     print git_staged()
     print git_history()

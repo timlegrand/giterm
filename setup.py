@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 from setuptools import setup
 
+exec(open('src/giterm/_version.py').read())
+
 with open("requirements.txt") as f:
     required = [l for l in f.read().splitlines() if not l.startswith("#")]
 
@@ -9,7 +11,7 @@ with open('README.rst') as f:
 
 setup(
     name='giterm',
-    version='0.3.2',
+    version=__version__,
     description='A terminal-based GUI client for Git',
     long_description=long_description,
     keywords='git, client, terminal, console',

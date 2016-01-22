@@ -1,5 +1,10 @@
 .. image:: https://badge.fury.io/py/giterm.svg
+    :alt: giterm is officially packaged at PyPI
     :target: https://badge.fury.io/py/giterm
+
+.. image:: https://badges.gitter.im/timlegrand/giterm.svg
+    :alt: Join the chat at https://gitter.im/timlegrand/giterm
+    :target: https://gitter.im/timlegrand/giterm?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
 Features
 ========
