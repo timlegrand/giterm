@@ -87,9 +87,10 @@ class Diff(Panel):
         self.running = threading.Lock()
 
     def handle_event(self, filepath):
-        if type(filepath) is not str:
-            return
         self.running.acquire()
+        if filepath is None or type(filepath) is not str:
+            self.running.release()
+            return
         self.content = self.rungit(filepath)
         self.topLineNum = 0
         self.selected_line = -1

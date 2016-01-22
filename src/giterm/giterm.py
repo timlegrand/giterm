@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import curses
 import argparse
+import os
 
 import watch
 import rungit
@@ -60,8 +61,10 @@ def keyloop(stdscr):
 
 def main(stdscr):
     cursutils.init(stdscr)
+    current_dir = os.getcwd()
     try:
-        rungit.check_is_git_repository()
+        git_root_dir = rungit.git_root_path()
+        os.chdir(git_root_dir)
         keyloop(stdscr)
     except Exception as e:
         cursutils.finalize(stdscr)
@@ -69,6 +72,8 @@ def main(stdscr):
             print e
         else:
             raise
+    finally:
+        os.chdir(current_dir)
 
 
 def _main():
