@@ -70,13 +70,13 @@ class GitermPanelManager(PanelManager):
         rungit.git_stage_file(path)
         self['stage'].handle_event(None)
         self['changes'].handle_event(None)
-        self['changes'].request_diff_in_diff_view()
 
     def unstage_file(self, path):
+        if not path:
+            raise Exception('path is mandatory')
         rungit.git_unstage_file(path)
         self['stage'].handle_event(None)
         self['changes'].handle_event(None)
-        self['changes'].request_diff_in_diff_view()
 
 
 class Diff(Panel):
@@ -109,24 +109,40 @@ class StagerUnstager(Panel):
         self.postponer = Postponer(timeout_in_seconds=0.3)
 
     def filename_from_linenum(self, linenum):
-        if len(self.content) <= linenum:
-            # TODO: log error and raise exception
-            return 'error: l.%s>%s' % (linenum, str(len(self.content) + 1))
-        return self.content[linenum].split()[1]
+        if linenum < 0 or linenum >= len(self.content):
+            return ''
+        line = None
+        try:
+            line = self.content[linenum]
+        except:
+            return ''
+        return line.split()[1]
 
     def move_cursor(self):
         super(StagerUnstager, self).move_cursor()
-        self.request_diff_in_diff_view()
+        if self.active:
+            self.request_diff_in_diff_view()
 
     def handle_event(self, event=None):
         super(StagerUnstager, self).handle_event()
         self.request_diff_in_diff_view()
 
-    def request_diff_in_diff_view(self):
-        if self.content:
+    def activate(self):
+        this = super(StagerUnstager, self).activate()
+        self.request_diff_in_diff_view()
+        return this
+
+    def request_diff_in_diff_view(self, even_not_active=False):
+        if not self.active and not even_not_active:
+            return
+        self.hovered_line = self.cursor_y + self.topLineNum - self.CT
+        if self.hovered_line < 0 or self.hovered_line >= len(self.content):
+            return
+        filepath = self.filename_from_linenum(self.hovered_line)
+        if self.content and filepath:
             self.postponer.set(
                 action=self.parent['diff'].handle_event,
-                args=[self.filename_from_linenum(self.hovered_line)])
+                args=[filepath])
 
     def select(self):
         if self.selected_line == self.hovered_line:

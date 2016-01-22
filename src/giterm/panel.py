@@ -97,6 +97,7 @@ class Panel(object):
             self.cursor_y = self.allowed_cursor_range_end
 
     def draw_hover(self):
+        self.hovered_line = self.cursor_y + self.topLineNum - self.CT
         y = self.cursor_y
         if (self.active and y >= self.CT and y <= self.CB and self.content):
             index = y + self.topLineNum - self.CT

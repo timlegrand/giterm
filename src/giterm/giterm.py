@@ -22,7 +22,7 @@ def keyloop(stdscr):
 
     # Initialize contents
     w.event_handler.fire()
-    panels['changes'].request_diff_in_diff_view()
+    panels['changes'].request_diff_in_diff_view(even_not_active=True)
 
     w.start()
 
