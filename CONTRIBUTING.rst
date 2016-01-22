@@ -71,7 +71,7 @@ To set up your dev env:
     # download source
     # cd the source root directory
     mkvirtualenv giterm
-    pip install .
+    pip install -r requirements.txt
 
 To quit the dev env:
 
@@ -98,11 +98,28 @@ You can check the state of your dev env any time with:
     pip freeze
 
 
+Testing
+-------
+
+To set up the testing/packaging env:
+
+.. code-block:: bash
+
+    mkvirtualenv packaging
+    pip install -r packaging-requirements.txt
+
+Testing:
+
+.. code-block:: bash
+
+    tox -e py27
+
+
 License
 -------
 
 By contributing to Giterm, you agree that your contributions will be
-licensed under the terms given in the `LICENSE`_ file.
+licensed under the terms given in the `LICENSE file`_.
 
 
 Miscellaneous
@@ -111,5 +128,5 @@ Miscellaneous
 Recommended listening while developing: `alt-J - An Awesome Wave`_
 
 
-.. _LICENSE: ./LICENSE
+.. _LICENSE file: ./LICENSE
 .. _alt-J - An Awesome Wave: https://en.wikipedia.org/wiki/An_Awesome_Wave

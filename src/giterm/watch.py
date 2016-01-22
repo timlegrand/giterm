@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 import sys
 
-import logging
-
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 from observer import Trigger
 
-GIT_BLACK_LIST = []  # blacklisting '.git' folder prevents git events tracking
+# Blacklisting '.git' folder prevents git events tracking
+# Prevent tracking '.goutputstream-*' files (known Ubuntu bug)
+GIT_BLACK_LIST = ['.git', '.git/index.lock', '.goutputstream']
 GIT_WHITE_LIST = ['.gitignore', '.gitconfig', '.gitmodules']
 
 

@@ -45,9 +45,9 @@ class GitermPanelManager(PanelManager):
         h_br = height - 4 * h_l
         self['branches'] = StateLinePanel(self.stdscr, h_br, w_20, 0, 0, title='Branches')
         self['remotes'] = Panel(self.stdscr, h_l, w_20, h_br, 0, title='Remotes')
-        self['stashes'] = Panel(self.stdscr, h_l, w_20, h_br+h_l, 0, title='Stashes')
-        self['submodules'] = Panel(self.stdscr, h_l, w_20, h_br+2*h_l, 0, title='Submodules')
-        self['tags'] = StateLinePanel(self.stdscr, h_l, w_20, h_br+3*h_l, 0, title='Tags')
+        self['stashes'] = Panel(self.stdscr, h_l, w_20, h_br + h_l, 0, title='Stashes')
+        self['submodules'] = Panel(self.stdscr, h_l, w_20, h_br + 2 * h_l, 0, title='Submodules')
+        self['tags'] = StateLinePanel(self.stdscr, h_l, w_20, h_br + 3 * h_l, 0, title='Tags')
         self['log'] = StateLinePanel(self.stdscr, h_49, w_30 + w_50, 0, w_20, title='History')
         self['stage'] = StagerUnstager(self, self.stdscr, h_25, w_30, h_49, w_20, title='Staging Area')
         self['changes'] = StagerUnstager(self, self.stdscr, h_26, w_30, h_49 + h_25, w_20, title='Local Changes')
@@ -72,6 +72,8 @@ class GitermPanelManager(PanelManager):
         self['changes'].handle_event(None)
 
     def unstage_file(self, path):
+        if not path:
+            raise Exception('path is mandatory')
         rungit.git_unstage_file(path)
         self['stage'].handle_event(None)
         self['changes'].handle_event(None)
@@ -85,10 +87,14 @@ class Diff(Panel):
         self.running = threading.Lock()
 
     def handle_event(self, filepath):
-        if type(filepath) is not str:
-            return
         self.running.acquire()
+        if filepath is None or type(filepath) is not str:
+            self.running.release()
+            return
         self.content = self.rungit(filepath)
+        self.topLineNum = 0
+        self.selected_line = -1
+        self.hovered_line = 0
         self.title = ": " + filepath if type(filepath) == str else ''
         self.title = self.default_title + self.title
         self.display()
@@ -104,20 +110,40 @@ class StagerUnstager(Panel):
         self.postponer = Postponer(timeout_in_seconds=0.3)
 
     def filename_from_linenum(self, linenum):
-        if len(self.content) <= linenum:
-            # TODO: log error and raise exception
-            return 'error: l.%s>%s' % (linenum, str(len(self.content)+1))
-        return self.content[linenum].split()[1]
+        if linenum < 0 or linenum >= len(self.content):
+            return ''
+        line = None
+        try:
+            line = self.content[linenum]
+        except:
+            return ''
+        return line.split()[1]
 
     def move_cursor(self):
         super(StagerUnstager, self).move_cursor()
+        if self.active:
+            self.request_diff_in_diff_view()
+
+    def handle_event(self, event=None):
+        super(StagerUnstager, self).handle_event()
         self.request_diff_in_diff_view()
 
-    def request_diff_in_diff_view(self):
-        if self.content:
+    def activate(self):
+        this = super(StagerUnstager, self).activate()
+        self.request_diff_in_diff_view()
+        return this
+
+    def request_diff_in_diff_view(self, even_not_active=False):
+        if not self.active and not even_not_active:
+            return
+        self.hovered_line = self.cursor_y + self.topLineNum - self.CT
+        if self.hovered_line < 0 or self.hovered_line >= len(self.content):
+            return
+        filepath = self.filename_from_linenum(self.hovered_line)
+        if self.content and filepath:
             self.postponer.set(
                 action=self.parent['diff'].handle_event,
-                args=[self.filename_from_linenum(self.hovered_line)])
+                args=[filepath])
 
     def select(self):
         if self.selected_line == self.hovered_line:

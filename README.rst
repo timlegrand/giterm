@@ -1,11 +1,18 @@
 .. image:: https://badge.fury.io/py/giterm.svg
+    :alt: giterm is officially packaged at PyPI
     :target: https://badge.fury.io/py/giterm
+
+.. image:: https://badges.gitter.im/timlegrand/giterm.svg
+    :alt: Join the chat at https://gitter.im/timlegrand/giterm
+    :target: https://gitter.im/timlegrand/giterm?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
 Features
 ========
 
 Giterm brings information about the current status of your Git working
-copy in *real-time*. It shows in a single view:
+copy right in your terminal, *real-time*.
+
+It shows in a single view:
 
 -  local branches, and which branch you’re currently on
 -  remote branches, and which branch the current local branch is
@@ -14,12 +21,6 @@ copy in *real-time*. It shows in a single view:
 -  current changes
 -  a *diff* view of the selected file in the *changes* list
 
-Giterm only *shows* Git information. It does not support git actions
-like commit checkout, branch switching, staging or committing.
-
-.. note:: Well OK, you should now be able to stage/unstage files with the
-   space bar :)
-
 
 Real-time!
 ----------
@@ -27,6 +28,16 @@ Real-time!
 Every change to the working copy (file edition/move or any Git command)
 refreshes the GUI instantly. You can work as usual, and keep a terminal
 open with giterm to get visual feedback on your actions.
+
+.. image:: assets/screenshot.png
+    :alt: screenshot of giterm interface
+    :align: center
+
+Giterm only *shows* Git information. It does not support git actions
+like commit, checkout, branch switching, staging or committing.
+
+.. note:: Well OK, you should now be able to stage/unstage files with the
+   space bar :)
 
 
 Usage
@@ -75,16 +86,16 @@ License
 =======
 
 This software is provided under the BSD 2-Clause License. Please read
-the `LICENSE`_ file for further information.
+the `LICENSE file`_ for further information.
 
 
 Contribute
 ==========
 
-See the `CONTRIBUTING.md`_ file for how to help out.
+See the `CONTRIBUTING.md file`_ for how to help out.
 
 Many thanks for your support!
 
 
-.. _LICENSE: ./LICENSE
-.. _CONTRIBUTING.md: ./CONTRIBUTING.md
+.. _LICENSE file: ./LICENSE
+.. _CONTRIBUTING.md file: ./CONTRIBUTING.md

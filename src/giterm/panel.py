@@ -62,14 +62,14 @@ class Panel(object):
         self.middle = (self.H//2, self.W//2)
         self.active = False
         self.topLineNum = 0
-        self.selected_line = -1  # Content-relative line number
-        self.hovered_line = 0  # Content-relative line number
-        self.load_content()
+        self.selected_line = -1  # Content-relative line number [0..N-1]
+        self.hovered_line = 0  # Content-relative line number [0..N-1]
 
     def display(self):
         self.window.erase()
         self.draw_borders()
         self.draw_content()
+        self.check_cursor_position()
         self.draw_hover()
         self.draw_selected()
         self.window.refresh()
@@ -86,7 +86,18 @@ class Panel(object):
             # TODO: need to handle case of last line fulfilled when
             # scrolling disabled
 
+    def check_cursor_position(self):
+        self.allowed_cursor_range_start = min(self.CT, len(self.content))
+        self.allowed_cursor_range_end = max(
+            self.allowed_cursor_range_start,
+            len(self.content) - 1 - self.topLineNum + self.CT)
+        if self.cursor_y < self.allowed_cursor_range_start:
+            self.cursor_y = self.allowed_cursor_range_start
+        elif self.cursor_y > self.allowed_cursor_range_end:
+            self.cursor_y = self.allowed_cursor_range_end
+
     def draw_hover(self):
+        self.hovered_line = self.cursor_y + self.topLineNum - self.CT
         y = self.cursor_y
         if (self.active and y >= self.CT and y <= self.CB and self.content):
             index = y + self.topLineNum - self.CT
@@ -123,12 +134,11 @@ class Panel(object):
                 sidebar_pos = self.CB
             self.window.addnstr(sidebar_pos, self.R, 'o', 1)
 
-    def load_content(self):
-        for i in range(5):
-            self.content.append("Line #%s starts here and ends here." % str(i))
+    def load_content(self, new_content):
+        self.content = new_content
 
     # Callback function for remote observers
-    def handle_event(self, event):
+    def handle_event(self, event=None):
         self.content = self.rungit()
         self.display()
 
@@ -230,10 +240,10 @@ class Panel(object):
     def debug(self, refresh=True):
         self.window.box(curses.ACS_CKBOARD, curses.ACS_CKBOARD)
         active = '  Active  ' if self.active else ' Inactive '
-        self.text_center(0, self.W//2, active)
+        self.text_center(0, self.W // 2, active)
         self.text_center(self.middle[0], self.middle[1], str(self.middle))
         size = '[' + str(self.H) + ' x ' + str(self.W) + ']'
-        self.text_center(self.middle[0]+1, self.middle[1], size)
+        self.text_center(self.middle[0] + 1, self.middle[1], size)
         TL = str((self.T, self.L))
         self.window.addstr(self.T, self.L, TL)
         TR = str((self.T, self.R))

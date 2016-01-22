@@ -1,0 +1,25 @@
+language:
+  - python
+
+python:
+  - 2.7
+
+branches:
+  only:
+    - master
+    - develop
+
+install:
+  - pip install -r packaging-requirements.txt
+  - pip install -r requirements.txt
+
+script:
+  - tox -e py26,py27
+
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/22d93f0e0b577b5583b3
+    on_success: change  # options: [always|never|change] default: always
+    on_failure: always  # options: [always|never|change] default: always
+    on_start: never     # options: [always|never|change] default: always

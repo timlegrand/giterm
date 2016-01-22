@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import curses
+import argparse
+import os
 
 import watch
 import rungit
+import cursutils
 
 from gui import GitermPanelManager
+from _version import __version_text__
 
 
 def keyloop(stdscr):
@@ -19,7 +23,7 @@ def keyloop(stdscr):
 
     # Initialize contents
     w.event_handler.fire()
-    panels['changes'].request_diff_in_diff_view()
+    panels['changes'].request_diff_in_diff_view(even_not_active=True)
 
     w.start()
 
@@ -56,19 +60,27 @@ def keyloop(stdscr):
 
 
 def main(stdscr):
+    cursutils.init(stdscr)
+    current_dir = os.getcwd()
     try:
-        rungit.check_is_git_repository()
+        git_root_dir = rungit.git_root_path()
+        os.chdir(git_root_dir)
         keyloop(stdscr)
     except Exception as e:
-        import cursutils
         cursutils.finalize(stdscr)
         if type(e) == rungit.NotAGitRepositoryException:
             print e
         else:
             raise
+    finally:
+        os.chdir(current_dir)
 
 
 def _main():
+    parser = argparse.ArgumentParser(description='''A terminal-based GUI client for Git.
+        Make sure to cd in a Git working copy root folder before launching giterm.''')
+    parser.add_argument('-v', '--version', action='version', version=__version_text__)
+    args = parser.parse_args()
     curses.wrapper(main)
 
 
