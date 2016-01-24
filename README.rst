@@ -1,6 +1,18 @@
+.. image:: https://img.shields.io/travis/timlegrand/giterm.svg
+    :alt: Travis-ci build information
+
 .. image:: https://badge.fury.io/py/giterm.svg
     :alt: giterm is officially packaged at PyPI
     :target: https://badge.fury.io/py/giterm
+
+.. image:: https://img.shields.io/pypi/dm/giterm.svg
+    :alt: giterm can be downloaded on PyPI
+
+.. image:: https://img.shields.io/pypi/status/giterm.svg
+    :alt: giterm development status information
+
+.. image:: https://img.shields.io/pypi/l/giterm.svg
+    :alt: giterm is released under BSD 2-Clause license
 
 .. image:: https://badges.gitter.im/timlegrand/giterm.svg
     :alt: Join the chat at https://gitter.im/timlegrand/giterm
