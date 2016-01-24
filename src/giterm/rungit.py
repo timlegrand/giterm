@@ -118,6 +118,7 @@ def git_submodules():
 
 def git_tags():
     data = run('git tag')
+    # If Git >= 2.3.3 'git log --date-order --tags --simplify-by-decoration --pretty=format:"%d"'
     return data
 
 
@@ -135,8 +136,6 @@ def git_diff(path):
             error = 0
     else:
         data = data[4:]
-    # import cursutils
-    # cursutils.debug()
     if error:
         raise Exception('Error executing "' + cmd + '" (error = ' + str(error))
     hunks = textutils.blocks(data, lambda x: x and x.startswith('@@'))
