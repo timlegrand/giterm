@@ -6,18 +6,20 @@ from watchdog.events import FileSystemEventHandler
 
 from observer import Trigger
 
-# Blacklisting '.git' folder prevents git events tracking
+
 # Prevent tracking '.goutputstream-*' files (known Ubuntu bug)
-GIT_BLACK_LIST = ['.git', '.git/index.lock', '.goutputstream']
+GIT_BLACK_LIST = ['.git/index.lock', '.goutputstream']
 GIT_WHITE_LIST = ['.gitignore', '.gitconfig', '.gitmodules']
 
 
 class FileChangedHandler(FileSystemEventHandler, Trigger):
-
     def on_any_event(self, event):
         path = event.src_path
         if path.startswith('./'):
             path = path[2:]
+        if path == '.git':
+            # We are not interested by the '.git' folder itself, only its contents
+            return
         for forbidden in GIT_BLACK_LIST:
             if path.startswith(forbidden):
                 if path not in GIT_WHITE_LIST:
