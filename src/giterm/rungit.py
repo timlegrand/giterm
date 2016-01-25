@@ -26,7 +26,8 @@ def run_with_error_code(cmd):
 def git_root_path():
     output, error = run_with_error_code('git rev-parse --show-toplevel')
     if error or len(output) != 1:
-        raise NotAGitRepositoryException('Please cd in a Git repository first.')
+        raise NotAGitRepositoryException(
+            'Please cd in a Git repository first.')
     return output[0]
 
 
@@ -118,7 +119,8 @@ def git_submodules():
 
 def git_tags():
     data = run('git tag')
-    # If Git >= 2.3.3 'git log --date-order --tags --simplify-by-decoration --pretty=format:"%d"'
+    # If Git >= 2.3.3:
+    # git log --date-order --tags --simplify-by-decoration --pretty=format:"%d"
     return data
 
 

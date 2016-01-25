@@ -18,7 +18,7 @@ class FileChangedHandler(FileSystemEventHandler, Trigger):
         if path.startswith('./'):
             path = path[2:]
         if path == '.git':
-            # We are not interested by the '.git' folder itself, only its contents
+            # Not interested by the '.git' folder itself, only its contents
             return
         for forbidden in GIT_BLACK_LIST:
             if path.startswith(forbidden):
