@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__version__ = '0.4.1.dev0'
+__version__ = '0.4.1'
 
 __version_text__ = '''giterm version {0} -
     Copyright © 2015-2016 Tim Legrand -
