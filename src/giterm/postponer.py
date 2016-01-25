@@ -67,7 +67,10 @@ if __name__ == '__main__':
     p.set(action=please_work)  # new callback, timer reset
     time.sleep(0.5)
     # Let's input new parameters, the timer resets
-    p.set(timeout_in_seconds=0.6, args=['arg#1', 'arg#2'], kwargs={'file': 'this'})
+    p.set(
+        timeout_in_seconds=0.6,
+        args=['arg#1', 'arg#2'],
+        kwargs={'file': 'this'})
     time.sleep(1.5)
     # Let's input new parameters, the timer resets
     p.set(timeout_in_seconds=0.6, action=no_do_that_instead)

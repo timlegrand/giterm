@@ -43,15 +43,33 @@ class GitermPanelManager(PanelManager):
         h_26 = h_51 - h_25
         h_l = height // 5
         h_br = height - 4 * h_l
-        self['branches'] = StateLinePanel(self.stdscr, h_br, w_20, 0, 0, title='Branches')
-        self['remotes'] = Panel(self.stdscr, h_l, w_20, h_br, 0, title='Remotes')
-        self['stashes'] = Panel(self.stdscr, h_l, w_20, h_br + h_l, 0, title='Stashes')
-        self['submodules'] = Panel(self.stdscr, h_l, w_20, h_br + 2 * h_l, 0, title='Submodules')
-        self['tags'] = StateLinePanel(self.stdscr, h_l, w_20, h_br + 3 * h_l, 0, title='Tags')
-        self['log'] = StateLinePanel(self.stdscr, h_49, w_30 + w_50, 0, w_20, title='History')
-        self['stage'] = StagerUnstager(self, self.stdscr, h_25, w_30, h_49, w_20, title='Staging Area')
-        self['changes'] = StagerUnstager(self, self.stdscr, h_26, w_30, h_49 + h_25, w_20, title='Local Changes')
-        self['diff'] = Diff(self.stdscr, h_51, w_50, h_49, w_20 + w_30, title='Diff View')
+        self['branches'] = StateLinePanel(
+            self.stdscr,
+            h_br, w_20, 0, 0, title='Branches')
+        self['remotes'] = Panel(
+            self.stdscr,
+            h_l, w_20, h_br, 0, title='Remotes')
+        self['stashes'] = Panel(
+            self.stdscr,
+            h_l, w_20, h_br + h_l, 0, title='Stashes')
+        self['submodules'] = Panel(
+            self.stdscr,
+            h_l, w_20, h_br + 2 * h_l, 0, title='Submodules')
+        self['tags'] = StateLinePanel(
+            self.stdscr,
+            h_l, w_20, h_br + 3 * h_l, 0, title='Tags')
+        self['log'] = StateLinePanel(
+            self.stdscr,
+            h_49, w_30 + w_50, 0, w_20, title='History')
+        self['stage'] = StagerUnstager(
+            self, self.stdscr,
+            h_25, w_30, h_49, w_20, title='Staging Area')
+        self['changes'] = StagerUnstager(
+            self, self.stdscr,
+            h_26, w_30, h_49 + h_25, w_20, title='Local Changes')
+        self['diff'] = Diff(
+            self.stdscr,
+            h_51, w_50, h_49, w_20 + w_30, title='Diff View')
 
         self['changes'].rungit = rungit.git_changed
         self['stage'].rungit = rungit.git_staged
