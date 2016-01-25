@@ -77,9 +77,11 @@ def main(stdscr):
 
 
 def _main():
-    parser = argparse.ArgumentParser(description='''A terminal-based GUI client for Git.''')
-    parser.add_argument('-v', '--version', action='version', version=__version_text__)
-    args = parser.parse_args()
+    parser = argparse.ArgumentParser(
+        description='''A terminal-based GUI client for Git.''')
+    parser.add_argument(
+        '-v', '--version', action='version', version=__version_text__)
+    parser.parse_args()
     curses.wrapper(main)
 
 

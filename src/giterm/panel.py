@@ -55,11 +55,11 @@ class Panel(object):
         self.window = stdscr.derwin(h, w, y, x)
         self.title = title
         self.H, self.W = self.window.getmaxyx()
-        self.T, self.L, self.B, self.R = 0, 0, h-1, w-1  # Window-relative
+        self.T, self.L, self.B, self.R = 0, 0, h - 1, w - 1  # Window-relative
         self.CT, self.CL, self.CB, self.CR, self.CH, self.CW\
-            = self.T+1, self.L+1, self.B-1, self.R-1, h-2, w-2
+            = self.T + 1, self.L + 1, self.B - 1, self.R - 1, h - 2, w - 2
         self.cursor_y, self.cursor_x = self.CT, self.CL  # Window-relative
-        self.middle = (self.H//2, self.W//2)
+        self.middle = (self.H // 2, self.W // 2)
         self.active = False
         self.topLineNum = 0
         self.selected_line = -1  # Content-relative line number [0..N-1]
@@ -119,12 +119,12 @@ class Panel(object):
 
     def draw_borders(self):
         self.window.box()
-        top, left, title, n = self.T, self.L+2, self.title, self.W-4
+        top, left, title, n = self.T, self.L + 2, self.title, self.W - 4
         if title:
             self.window.addnstr(top, left, ' ' + title + ' ', n)
             if self.active:
-                self.window.addnstr(top, left, '[' + title + ']', n+2)
-                self.window.chgat(top, left, len(title)+2, curses.A_BOLD)
+                self.window.addnstr(top, left, '[' + title + ']', n + 2)
+                self.window.chgat(top, left, len(title) + 2, curses.A_BOLD)
         sidebar_pos = int(self.topLineNum * self.CH /
                           (max(len(self.content) - self.CH, 1)))
         if len(self.content) > self.CH:
@@ -168,23 +168,23 @@ class Panel(object):
 
     def getcontentyx(self):
         y, x = self.window.getbegyx()
-        return y+self.CT, x+self.CL
+        return y + self.CT, x + self.CL
 
     def text_center(self, row, col, string):
-        self.window.addstr(row, col-len(string)/2, string)
+        self.window.addstr(row, col - len(string) / 2, string)
 
     def text(self, y, x, string):
         self.window.addstr(y, x, string)
 
     def text_right_align(self, y, x, string):
-        self.window.addstr(y, x-len(string)+1, string)
+        self.window.addstr(y, x - len(string) + 1, string)
 
     def text_force_right_align(self, y, x, string):
         '''Forces right-aligned text to be printed
         until the last char position of the panel
         even with scrolling disabled'''
         try:
-            self.window.addstr(y, x-len(string)+1, string)
+            self.window.addstr(y, x - len(string) + 1, string)
         except curses.error:
             pass
 

@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from nose.tools import *
-
 import giterm.textutils as textutils
 
 
@@ -28,7 +26,8 @@ def test_blocks():
 
  def git_tags():
      data = run('git tag')
-+    # If Git >= 2.3.3 'git log --date-order --tags --simplify-by-decoration --pretty=format:"%d"'
++    # If Git >= 2.3.3 'git log --date-order --tags --simplify-by-decoration \
+--pretty=format:"%d"'
      return data
 
 
@@ -39,7 +38,8 @@ def test_blocks():
 -    # import cursutils
 -    # cursutils.debug()
      if error:
-         raise Exception('Error executing "' + cmd + '" (error = ' + str(error))
+         raise Exception('Error executing "' + cmd + '" (error = ' + \
+str(error))
     '''.split('\n')
 
     blocks = textutils.blocks(text, lambda x: x and x.startswith('@@'))
