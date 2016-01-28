@@ -104,12 +104,12 @@ class Diff(Panel):
         self.default_title = self.title
         self.running = threading.Lock()
 
-    def handle_event(self, filepath):
+    def handle_event(self, filepath, staged=False):
         self.running.acquire()
         if filepath is None or type(filepath) is not str:
             self.running.release()
             return
-        self.content = self.rungit(filepath)
+        self.content = self.rungit(filepath, staged)
         self.topLineNum = 0
         self.selected_line = -1
         self.hovered_line = 0
@@ -161,7 +161,7 @@ class StagerUnstager(Panel):
         if self.content and filepath:
             self.postponer.set(
                 action=self.parent['diff'].handle_event,
-                args=[filepath])
+                args=[filepath, (self.title == 'Staging Area')])
 
     def select(self):
         if self.selected_line == self.hovered_line:

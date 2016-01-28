@@ -124,11 +124,12 @@ def git_tags():
     return data
 
 
-def git_diff(path):
+def git_diff(path, cached=False):
     if not path or type(path) is not str:
         raise Exception('Path not supported: ' + str(path))
 
-    cmd = 'git diff -- %s' % path
+    opt = '--cached' if cached else ''
+    cmd = 'git diff {} -- {}'.format(opt, path)
     data, error = run_with_error_code(cmd)
     if not data:
         cmd = 'git diff -- /dev/null %s' % path
