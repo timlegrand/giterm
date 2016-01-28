@@ -49,15 +49,15 @@ class GitermPanelManager(PanelManager):
         self['remotes'] = Panel(
             self.stdscr,
             h_l, w_20, h_br, 0, title='Remotes')
-        self['stashes'] = Panel(
-            self.stdscr,
-            h_l, w_20, h_br + h_l, 0, title='Stashes')
-        self['submodules'] = Panel(
-            self.stdscr,
-            h_l, w_20, h_br + 2 * h_l, 0, title='Submodules')
         self['tags'] = StateLinePanel(
             self.stdscr,
-            h_l, w_20, h_br + 3 * h_l, 0, title='Tags')
+            h_l, w_20, h_br + h_l, 0, title='Tags')
+        self['stashes'] = Panel(
+            self.stdscr,
+            h_l, w_20, h_br + 2 * h_l, 0, title='Stashes')
+        self['submodules'] = Panel(
+            self.stdscr,
+            h_l, w_20, h_br + 3 * h_l, 0, title='Submodules')
         self['log'] = StateLinePanel(
             self.stdscr,
             h_49, w_30 + w_50, 0, w_20, title='History')
