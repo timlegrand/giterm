@@ -141,12 +141,8 @@ def git_diff(path, cached=False):
         data = data[4:]
     if error:
         raise Exception('Error executing "' + cmd + '" (error = ' + str(error))
-    hunks = textutils.blocks(data, lambda x: x and x.startswith('@@'))
-    screen_content = []
-    for h in hunks:
-        screen_content += textutils.remove_superfluous_alineas(h)
-        screen_content.append('─' * 80)
-    return screen_content
+    hunks = list(textutils.blocks(data, lambda x: x and x.startswith('@@')))
+    return hunks
 
 
 def run_simple_command(command, path):

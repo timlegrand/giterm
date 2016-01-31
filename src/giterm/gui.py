@@ -5,6 +5,7 @@ import threading
 from panel import Panel, PanelManager
 from postponer import Postponer
 import rungit
+import textutils
 
 
 class GitermPanelManager(PanelManager):
@@ -16,7 +17,7 @@ class GitermPanelManager(PanelManager):
     def create_panels(self):
         """Creates a graphical-like UI:
     ┌────────┐┌────────────────────────────────┐
-    │Branches││Log history                     │
+    │Branches││ Log history                    │
     │> master││                                │
     │> devel ││                                │
     │        ││                                │
@@ -104,17 +105,27 @@ class Diff(Panel):
         self.default_title = self.title
         self.running = threading.Lock()
 
+    def setup_content(self):
+        if not self.data:
+            return
+        self.content = []
+        cut_line = '-' * (self.CW // 2 - 1) + '8<'  + '-' * (self.CW // 2 - 1)
+        for h in self.data:
+            self.content += textutils.remove_superfluous_alineas(h)
+            self.content.append(cut_line)
+
     def handle_event(self, filepath, staged=False):
         self.running.acquire()
         if filepath is None or type(filepath) is not str:
             self.running.release()
             return
-        self.content = self.rungit(filepath, staged)
+        self.data = self.rungit(filepath, staged)
+        self.setup_content()
         self.topLineNum = 0
         self.selected_line = -1
         self.hovered_line = 0
-        self.title = ": " + filepath if type(filepath) == str else ''
-        self.title = self.default_title + self.title
+        message = ": " + filepath if type(filepath) == str else ''
+        self.title = self.default_title + message
         self.display()
         self.running.release()
 
