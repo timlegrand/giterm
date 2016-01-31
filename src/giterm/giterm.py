@@ -14,7 +14,7 @@ from _version import __version_text__
 
 def keyloop(stdscr):
     panels = GitermPanelManager(stdscr)
-    active = panels['log'].activate()
+    active = panels['history'].activate()
     panels.display()
 
     w = watch.Watcher()
@@ -37,6 +37,27 @@ def keyloop(stdscr):
                 break
             elif c == '\t':
                 active = panels.toggle()
+            elif c == 'h':
+                active.deactivate()
+                active = panels['history'].activate()
+            elif c == 'c':
+                active.deactivate()
+                active = panels['changes'].activate()
+            elif c == 's':
+                active.deactivate()
+                active = panels['stage'].activate()
+            elif c == 'd':
+                active.deactivate()
+                active = panels['diff'].activate()
+            elif c == 'b':
+                active.deactivate()
+                active = panels['branches'].activate()
+            elif c == 'r':
+                active.deactivate()
+                active = panels['remotes'].activate()
+            elif c == 't':
+                active.deactivate()
+                active = panels['tags'].activate()
         elif c == curses.KEY_BTAB:
             active = panels.toggle(reverse=True)
         elif c == curses.KEY_UP:

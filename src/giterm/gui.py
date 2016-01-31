@@ -59,7 +59,7 @@ class GitermPanelManager(PanelManager):
         self['submodules'] = Panel(
             self.stdscr,
             h_l, w_20, h_br + 3 * h_l, 0, title='Submodules')
-        self['log'] = StateLinePanel(
+        self['history'] = StateLinePanel(
             self.stdscr,
             h_49, w_30 + w_50, 0, w_20, title='History')
         self['stage'] = StagerUnstager(
@@ -67,14 +67,14 @@ class GitermPanelManager(PanelManager):
             h_25, w_30, h_49, w_20, title='Staging Area')
         self['changes'] = StagerUnstager(
             self, self.stdscr,
-            h_26, w_30, h_49 + h_25, w_20, title='Local Changes')
+            h_26, w_30, h_49 + h_25, w_20, title='Changes')
         self['diff'] = Diff(
             self.stdscr,
             h_51, w_50, h_49, w_20 + w_30, title='Diff View')
 
         self['changes'].rungit = rungit.git_changed
         self['stage'].rungit = rungit.git_staged
-        self['log'].rungit = rungit.git_history
+        self['history'].rungit = rungit.git_history
         self['branches'].rungit = rungit.git_branches
         self['remotes'].rungit = rungit.git_remotes
         self['stashes'].rungit = rungit.git_stashes
