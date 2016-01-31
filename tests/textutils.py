@@ -141,3 +141,8 @@ def test_get_new_minimum_alinea():
         text_b,
         previous_alinea=2,
         num_ignored_chars=0) == 0
+
+    assert textutils.get_new_minimum_alinea(
+        text_c,
+        previous_alinea=2,
+        num_ignored_chars=0) == 2
