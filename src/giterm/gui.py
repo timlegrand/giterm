@@ -129,6 +129,11 @@ class Diff(Panel):
         self.display()
         self.running.release()
 
+    def activate(self):
+        self.cursor_y = 1
+        super(Diff, self).activate()
+        return self
+
 
 class StagerUnstager(Panel):
 
