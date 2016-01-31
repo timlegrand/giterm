@@ -124,11 +124,12 @@ def git_tags():
     return data
 
 
-def git_diff(path):
+def git_diff(path, cached=False):
     if not path or type(path) is not str:
         raise Exception('Path not supported: ' + str(path))
 
-    cmd = 'git diff -- %s' % path
+    opt = '--cached' if cached else ''
+    cmd = 'git diff {} -- {}'.format(opt, path)
     data, error = run_with_error_code(cmd)
     if not data:
         cmd = 'git diff -- /dev/null %s' % path
@@ -140,12 +141,8 @@ def git_diff(path):
         data = data[4:]
     if error:
         raise Exception('Error executing "' + cmd + '" (error = ' + str(error))
-    hunks = textutils.blocks(data, lambda x: x and x.startswith('@@'))
-    screen_content = []
-    for h in hunks:
-        screen_content += textutils.remove_superfluous_alineas(h)
-        screen_content.append('─' * 80)
-    return screen_content
+    hunks = list(textutils.blocks(data, lambda x: x and x.startswith('@@')))
+    return hunks
 
 
 def run_simple_command(command, path):

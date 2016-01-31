@@ -51,6 +51,7 @@ class Panel(object):
 
     def __init__(self, stdscr, h, w, y, x, title=''):
         self.content = []
+        self.data = []
         self.decorations = {}
         self.window = stdscr.derwin(h, w, y, x)
         self.title = title
@@ -134,12 +135,14 @@ class Panel(object):
                 sidebar_pos = self.CB
             self.window.addnstr(sidebar_pos, self.R, 'o', 1)
 
-    def load_content(self, new_content):
-        self.content = new_content
+    def setup_content(self):
+        if self.data:
+            self.content = self.data
 
     # Callback function for remote observers
     def handle_event(self, event=None):
-        self.content = self.rungit()
+        self.data = self.rungit()
+        self.setup_content()
         self.display()
 
     def select(self):

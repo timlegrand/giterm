@@ -26,12 +26,12 @@ copy right in your terminal, *real-time*.
 
 It shows in a single view:
 
--  local branches, and which branch you’re currently on
--  remote branches, and which branch the current local branch is
-   tracking
--  commit history, and which commit you are currently working from
--  current changes
--  a *diff* view of the selected file in the *changes* list
+- local branches, and which branch you’re currently on
+- remote branches, and which branch the current local branch is
+  tracking
+- commit history, and which commit you are currently working from
+- current changes
+- a *diff* view of the selected file in the *changes* list
 
 
 Real-time!
@@ -45,20 +45,9 @@ open with giterm to get visual feedback on your actions.
     :alt: screenshot of giterm interface
     :align: center
 
-Giterm only *shows* Git information. It does not support git actions
-like commit, checkout, branch switching, staging or committing.
-
-.. note:: Well OK, you should now be able to stage/unstage files with the
-   space bar :)
-
-
-Usage
-=====
-
-.. code-block:: bash
-
-    cd path/to/git/working/copy
-    giterm
+Giterm essentially *shows* Git information. It does not support git actions
+like commit, checkout, branch switching, committing. Only staging is supported
+at this time.
 
 
 Installation
@@ -74,6 +63,31 @@ If you don’t have ``pip`` installed yet:
 
     curl -s https://bootstrap.pypa.io/get-pip.py | sudo python
     pip install giterm
+
+
+Usage
+=====
+
+.. code-block:: bash
+
+    cd path/to/git/working/copy
+    giterm
+
+
+Keymap
+------
+
+- [Tab]: Toggle panel
+- [Shift + Tab]: Reverse Toggle
+- [h]: Log history
+- [c]: Changes view
+- [s]: Staging area
+- [d]: Diff view
+- [b]: Branches
+- [r]: Remotes
+- [t]: Tags
+- [Space]: stage/unstage current file
+- [q]: Quit
 
 
 Requirements

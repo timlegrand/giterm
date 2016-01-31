@@ -5,6 +5,7 @@ import threading
 from panel import Panel, PanelManager
 from postponer import Postponer
 import rungit
+import textutils
 
 
 class GitermPanelManager(PanelManager):
@@ -16,7 +17,7 @@ class GitermPanelManager(PanelManager):
     def create_panels(self):
         """Creates a graphical-like UI:
     ┌────────┐┌────────────────────────────────┐
-    │Branches││Log history                     │
+    │Branches││ Log history                    │
     │> master││                                │
     │> devel ││                                │
     │        ││                                │
@@ -49,16 +50,16 @@ class GitermPanelManager(PanelManager):
         self['remotes'] = Panel(
             self.stdscr,
             h_l, w_20, h_br, 0, title='Remotes')
-        self['stashes'] = Panel(
-            self.stdscr,
-            h_l, w_20, h_br + h_l, 0, title='Stashes')
-        self['submodules'] = Panel(
-            self.stdscr,
-            h_l, w_20, h_br + 2 * h_l, 0, title='Submodules')
         self['tags'] = StateLinePanel(
             self.stdscr,
-            h_l, w_20, h_br + 3 * h_l, 0, title='Tags')
-        self['log'] = StateLinePanel(
+            h_l, w_20, h_br + h_l, 0, title='Tags')
+        self['stashes'] = Panel(
+            self.stdscr,
+            h_l, w_20, h_br + 2 * h_l, 0, title='Stashes')
+        self['submodules'] = Panel(
+            self.stdscr,
+            h_l, w_20, h_br + 3 * h_l, 0, title='Submodules')
+        self['history'] = StateLinePanel(
             self.stdscr,
             h_49, w_30 + w_50, 0, w_20, title='History')
         self['stage'] = StagerUnstager(
@@ -66,14 +67,14 @@ class GitermPanelManager(PanelManager):
             h_25, w_30, h_49, w_20, title='Staging Area')
         self['changes'] = StagerUnstager(
             self, self.stdscr,
-            h_26, w_30, h_49 + h_25, w_20, title='Local Changes')
+            h_26, w_30, h_49 + h_25, w_20, title='Changes')
         self['diff'] = Diff(
             self.stdscr,
             h_51, w_50, h_49, w_20 + w_30, title='Diff View')
 
         self['changes'].rungit = rungit.git_changed
         self['stage'].rungit = rungit.git_staged
-        self['log'].rungit = rungit.git_history
+        self['history'].rungit = rungit.git_history
         self['branches'].rungit = rungit.git_branches
         self['remotes'].rungit = rungit.git_remotes
         self['stashes'].rungit = rungit.git_stashes
@@ -104,19 +105,34 @@ class Diff(Panel):
         self.default_title = self.title
         self.running = threading.Lock()
 
-    def handle_event(self, filepath):
+    def setup_content(self):
+        if not self.data:
+            return
+        self.content = []
+        cut_line = '-' * (self.CW // 2 - 1) + '8<'  + '-' * (self.CW // 2 - 1)
+        for h in self.data:
+            self.content += textutils.remove_superfluous_alineas(h)
+            self.content.append(cut_line)
+
+    def handle_event(self, filepath, staged=False):
         self.running.acquire()
         if filepath is None or type(filepath) is not str:
             self.running.release()
             return
-        self.content = self.rungit(filepath)
+        self.data = self.rungit(filepath, staged)
+        self.setup_content()
         self.topLineNum = 0
         self.selected_line = -1
         self.hovered_line = 0
-        self.title = ": " + filepath if type(filepath) == str else ''
-        self.title = self.default_title + self.title
+        message = ": " + filepath if type(filepath) == str else ''
+        self.title = self.default_title + message
         self.display()
         self.running.release()
+
+    def activate(self):
+        self.cursor_y = 1
+        super(Diff, self).activate()
+        return self
 
 
 class StagerUnstager(Panel):
@@ -161,7 +177,7 @@ class StagerUnstager(Panel):
         if self.content and filepath:
             self.postponer.set(
                 action=self.parent['diff'].handle_event,
-                args=[filepath])
+                args=[filepath, (self.title == 'Staging Area')])
 
     def select(self):
         if self.selected_line == self.hovered_line:
