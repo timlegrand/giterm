@@ -6,10 +6,10 @@
     :target: https://badge.fury.io/py/giterm
 
 .. image:: https://img.shields.io/pypi/dm/giterm.svg
-    :alt: giterm can be downloaded on PyPI
+    :alt: giterm can be found on PyPI official
 
 .. image:: https://img.shields.io/pypi/status/giterm.svg
-    :alt: giterm development status information
+    :alt: giterm development status
 
 .. image:: https://img.shields.io/pypi/l/giterm.svg
     :alt: giterm is released under BSD 2-Clause license
@@ -118,10 +118,10 @@ the `LICENSE file`_ for further information.
 Contribute
 ==========
 
-See the `CONTRIBUTING.md file`_ for how to help out.
+See the `CONTRIBUTING file`_ for how to help out.
 
 Many thanks for your support!
 
 
 .. _LICENSE file: ./LICENSE
-.. _CONTRIBUTING.md file: ./CONTRIBUTING.md
+.. _CONTRIBUTING file: ./CONTRIBUTING.rst
