@@ -1,38 +1,31 @@
 # -*- coding: utf-8 -*-
-import subprocess
+import commands
 import os
 
 import textutils
 
-
-class ArgumentException(Exception):
-    pass
+from exception import *
 
 
 def run(cmd):
-    process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
-    output = process.communicate()[0].split('\n')
-    # code = process.returncode
-    return [x for x in output if x]
-
-
-def run_with_error_code(cmd):
-    process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
-    output = process.communicate()[0].split('\n')
-    code = process.returncode
-    return [x for x in output if x], code
+    code, output = commands.getstatusoutput(cmd)
+    return code, [x for x in output.split('\n') if x]
 
 
 def git_root_path():
-    output, error = run_with_error_code('git rev-parse --show-toplevel')
-    if error or len(output) != 1:
-        raise NotAGitRepositoryException(
-            'Please cd in a Git repository first.')
+    error, output = run('git rev-parse --show-toplevel')
+    if error:
+        if error == 32512:
+            raise GitNotFoundException(
+                'Git not found. Please install Git first.')
+        else:
+            raise NotAGitRepositoryException(
+                'Please cd in a Git repository first.')
     return output[0]
 
 
 def git_status(staged=False):
-    output = run('git status -s --porcelain')
+    error, output = run('git status -s --porcelain')
     data = []
     for line in output:
         path = line.split()[1]
@@ -48,7 +41,7 @@ def git_status(staged=False):
         elif code in '?!':
             if not staged:
                 if os.path.isdir(path):
-                    paths = run('find %s -type f' % path)
+                    error, paths = run('find %s -type f' % path)
                     data += [full_code + ' ' + x for x in paths]
                 else:
                     data.append(line)
@@ -66,7 +59,7 @@ def git_staged():
 
 
 def git_history():
-    data = run('git log --abbrev-commit --decorate --date=iso')
+    error, data = run('git log --abbrev-commit --decorate --date=iso')
     commits = textutils.blocks(data, lambda x: x and x[:6] == 'commit')
     output = []
     for commit in commits:
@@ -92,33 +85,33 @@ def git_history():
 
 
 def git_branches():
-    data = run('git branch')
+    error, data = run('git branch')
     for i, line in enumerate(data):
         data[i] = line[2:] if line[0] != '*' else '*' + line[2:]
     return data
 
 
 def git_stashes():
-    data = run('git stash list')
+    error, data = run('git stash list')
     for i, line in enumerate(data):
         data[i] = line[14:]
     return data
 
 
 def git_remotes():
-    data = run('git remote show')
+    error, data = run('git remote show')
     return data
 
 
 def git_submodules():
-    data = run('git submodule status')
+    error, data = run('git submodule status')
     for i, line in enumerate(data):
         data[i] = line.split()[1]
     return data
 
 
 def git_tags():
-    data = run('git tag')
+    error, data = run('git tag')
     # If Git >= 2.3.3:
     # git log --date-order --tags --simplify-by-decoration --pretty=format:"%d"
     return data
@@ -130,10 +123,10 @@ def git_diff(path, cached=False):
 
     opt = '--cached' if cached else ''
     cmd = 'git diff {} -- {}'.format(opt, path)
-    data, error = run_with_error_code(cmd)
+    error, data = run(cmd)
     if not data:
         cmd = 'git diff -- /dev/null %s' % path
-        data, error = run_with_error_code(cmd)
+        error, data = run(cmd)
         if data:
             data = data[5:]
             error = 0
@@ -149,11 +142,9 @@ def run_simple_command(command, path):
     if not path:
         raise ArgumentException('File name missing.')
     command = 'git %s -- %s' % (command, path)
-    with open(os.devnull, "w") as dev_null:
-        error = subprocess.call(command.split(),
-                                stdout=dev_null, stderr=subprocess.STDOUT)
-        if error != 0:
-            raise Exception('Error %s while running "%s"' % (error, command))
+    code, output = commands.getstatusoutput(command)
+    if code != 0:
+        raise Exception('Error %s while running "%s"' % (code, command))
 
 
 def git_stage_file(path):
@@ -162,10 +153,6 @@ def git_stage_file(path):
 
 def git_unstage_file(path):
     run_simple_command('reset', path)
-
-
-class NotAGitRepositoryException(Exception):
-    pass
 
 
 if __name__ == '__main__':
@@ -178,4 +165,4 @@ if __name__ == '__main__':
     print git_remotes()
     print git_submodules()
     print git_tags()
-    print git_diff(path='rungit.py')
+    print git_diff(path='src/giterm/rungit.py')
