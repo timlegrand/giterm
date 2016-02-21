@@ -9,16 +9,11 @@ from exception import *
 
 def run(cmd):
     code, output = commands.getstatusoutput(cmd)
-    return [x for x in output.split('\n') if x]
-
-
-def run_with_error_code(cmd):
-    code, output = commands.getstatusoutput(cmd)
-    return output.split('\n'), code
+    return code, [x for x in output.split('\n') if x]
 
 
 def git_root_path():
-    output, error = run_with_error_code('git rev-parse --show-toplevel')
+    error, output = run('git rev-parse --show-toplevel')
     if error:
         if error == 32512:
             raise GitNotFoundException(
@@ -26,11 +21,11 @@ def git_root_path():
         else:
             raise NotAGitRepositoryException(
                 'Please cd in a Git repository first.' + str( len(output)))
-    return ''.join(output)
+    return output[0]
 
 
 def git_status(staged=False):
-    output = run('git status -s --porcelain')
+    error, output = run('git status -s --porcelain')
     data = []
     for line in output:
         path = line.split()[1]
@@ -46,7 +41,7 @@ def git_status(staged=False):
         elif code in '?!':
             if not staged:
                 if os.path.isdir(path):
-                    paths = run('find %s -type f' % path)
+                    error, paths = run('find %s -type f' % path)
                     data += [full_code + ' ' + x for x in paths]
                 else:
                     data.append(line)
@@ -64,7 +59,7 @@ def git_staged():
 
 
 def git_history():
-    data = run('git log --abbrev-commit --decorate --date=iso')
+    error, data = run('git log --abbrev-commit --decorate --date=iso')
     commits = textutils.blocks(data, lambda x: x and x[:6] == 'commit')
     output = []
     for commit in commits:
@@ -90,33 +85,33 @@ def git_history():
 
 
 def git_branches():
-    data = run('git branch')
+    error, data = run('git branch')
     for i, line in enumerate(data):
         data[i] = line[2:] if line[0] != '*' else '*' + line[2:]
     return data
 
 
 def git_stashes():
-    data = run('git stash list')
+    error, data = run('git stash list')
     for i, line in enumerate(data):
         data[i] = line[14:]
     return data
 
 
 def git_remotes():
-    data = run('git remote show')
+    error, data = run('git remote show')
     return data
 
 
 def git_submodules():
-    data = run('git submodule status')
+    error, data = run('git submodule status')
     for i, line in enumerate(data):
         data[i] = line.split()[1]
     return data
 
 
 def git_tags():
-    data = run('git tag')
+    error, data = run('git tag')
     # If Git >= 2.3.3:
     # git log --date-order --tags --simplify-by-decoration --pretty=format:"%d"
     return data
@@ -128,10 +123,10 @@ def git_diff(path, cached=False):
 
     opt = '--cached' if cached else ''
     cmd = 'git diff {} -- {}'.format(opt, path)
-    data, error = run_with_error_code(cmd)
+    error, data = run(cmd)
     if not data:
         cmd = 'git diff -- /dev/null %s' % path
-        data, error = run_with_error_code(cmd)
+        error, data = run(cmd)
         if data:
             data = data[5:]
             error = 0
