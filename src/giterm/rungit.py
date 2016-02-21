@@ -1,34 +1,32 @@
 # -*- coding: utf-8 -*-
-import subprocess
+import commands
 import os
 
 import textutils
 
-
-class ArgumentException(Exception):
-    pass
+from exception import *
 
 
 def run(cmd):
-    process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
-    output = process.communicate()[0].split('\n')
-    # code = process.returncode
-    return [x for x in output if x]
+    code, output = commands.getstatusoutput(cmd)
+    return [x for x in output.split('\n') if x]
 
 
 def run_with_error_code(cmd):
-    process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
-    output = process.communicate()[0].split('\n')
-    code = process.returncode
-    return [x for x in output if x], code
+    code, output = commands.getstatusoutput(cmd)
+    return output.split('\n'), code
 
 
 def git_root_path():
     output, error = run_with_error_code('git rev-parse --show-toplevel')
-    if error or len(output) != 1:
-        raise NotAGitRepositoryException(
-            'Please cd in a Git repository first.')
-    return output[0]
+    if error:
+        if error == 32512:
+            raise GitNotFoundException(
+                'Git not found. Please install Git first.')
+        else:
+            raise NotAGitRepositoryException(
+                'Please cd in a Git repository first.' + str( len(output)))
+    return ''.join(output)
 
 
 def git_status(staged=False):
@@ -149,11 +147,9 @@ def run_simple_command(command, path):
     if not path:
         raise ArgumentException('File name missing.')
     command = 'git %s -- %s' % (command, path)
-    with open(os.devnull, "w") as dev_null:
-        error = subprocess.call(command.split(),
-                                stdout=dev_null, stderr=subprocess.STDOUT)
-        if error != 0:
-            raise Exception('Error %s while running "%s"' % (error, command))
+    code, output = commands.getstatusoutput(command)
+    if code != 0:
+        raise Exception('Error %s while running "%s"' % (code, command))
 
 
 def git_stage_file(path):
@@ -162,10 +158,6 @@ def git_stage_file(path):
 
 def git_unstage_file(path):
     run_simple_command('reset', path)
-
-
-class NotAGitRepositoryException(Exception):
-    pass
 
 
 if __name__ == '__main__':
@@ -178,4 +170,4 @@ if __name__ == '__main__':
     print git_remotes()
     print git_submodules()
     print git_tags()
-    print git_diff(path='rungit.py')
+    print git_diff(path='src/giterm/rungit.py')
