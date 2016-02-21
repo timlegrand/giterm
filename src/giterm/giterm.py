@@ -10,6 +10,7 @@ import cursutils
 
 from gui import GitermPanelManager
 from _version import __version_text__
+from exception import *
 
 
 def keyloop(stdscr):
@@ -89,7 +90,8 @@ def main(stdscr):
         keyloop(stdscr)
     except Exception as e:
         cursutils.finalize(stdscr)
-        if type(e) == rungit.NotAGitRepositoryException:
+        t = type(e)
+        if t == NotAGitRepositoryException or t == GitNotFoundException:
             print e
         else:
             raise
