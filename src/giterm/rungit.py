@@ -20,7 +20,7 @@ def git_root_path():
                 'Git not found. Please install Git first.')
         else:
             raise NotAGitRepositoryException(
-                'Please cd in a Git repository first.' + str( len(output)))
+                'Please cd in a Git repository first.')
     return output[0]
 
 
