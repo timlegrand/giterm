@@ -77,10 +77,10 @@ Usage
 Keymap
 ------
 
-- [Tab]: Toggle panel
-- [Shift + Tab]: Reverse Toggle
-- [Up/Down]: Scroll line by line
-- [Page Up/Page Down]: Scroll screen by screen
+- [tab]: Toggle panel
+- [shift + tab]: Reverse Toggle
+- [up]/[down]: Scroll line by line
+- [page up]/[page down]: Scroll screen by screen
 - [h]: Log history
 - [c]: Changes view
 - [s]: Staging area
@@ -88,7 +88,7 @@ Keymap
 - [b]: Branches
 - [r]: Remotes
 - [t]: Tags
-- [Space]: stage/unstage current file
+- [space]: Stage/unstage current file
 - [q]: Quit
 
 
