@@ -79,6 +79,8 @@ Keymap
 
 - [Tab]: Toggle panel
 - [Shift + Tab]: Reverse Toggle
+- [Up/Down]: Scroll line by line
+- [Page Up/Page Down]: Scroll screen by screen
 - [h]: Log history
 - [c]: Changes view
 - [s]: Staging area
