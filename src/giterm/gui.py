@@ -111,7 +111,7 @@ class Diff(Panel):
         if not self.data:
             return
         self.content = []
-        cut_line = '-' * (self.CW // 2 - 1) + '8<'  + '-' * (self.CW // 2 - 1)
+        cut_line = '-' * (self.CW // 2 - 1) + '8<' + '-' * (self.CW // 2 - 1)
         for h in self.data:
             self.content += text.remove_superfluous_alineas(h)
             self.content.append(cut_line)
