@@ -68,7 +68,10 @@ def git_history():
             if line.startswith('commit'):
                 sha1 = line.split()[1]
                 main = line.split('(', 1)
-                branches = '(' + main[1] if len(main) == 2 else ''
+                labels = ''
+                if len(main) == 2:
+                    labels = main[1].split(')', 1)[0]
+                    labels = labels.split(', ')
             elif line.startswith('Author'):
                 author = line.split(' ', 1)[1].lstrip()
             elif line.startswith('Date'):
@@ -78,9 +81,8 @@ def git_history():
             else:
                 text.append(line.lstrip())
         message = ' | '.join([x for x in text if x])
-        history_line = ' '.join([branches, message, author, date, sha1])
-        output.append(history_line.lstrip())
-    output[0] = '*' + output[0]
+        history_line = [labels, message, author, date, sha1]
+        output.append(history_line)
     return output
 
 

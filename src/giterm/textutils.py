@@ -6,12 +6,15 @@ locale.setlocale(locale.LC_ALL, '')
 code = locale.getpreferredencoding()
 
 
-def shorten(string, size):
+def shorten(string, size, dots=True):
     printable = string.decode(code)
     # Is that really efficient? Shouldn't we store the raw data
     # in self.content instead?
     if len(printable) > size:
-        printable = printable[:size - 3] + '...'
+        if dots:
+            printable = printable[:size - 3] + '...'
+        else:
+            printable = printable[:size]
     return printable.encode(code), len(string)
 
 
