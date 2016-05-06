@@ -136,8 +136,7 @@ class Panel(object):
             self.window.addnstr(sidebar_pos, self.R, 'o', 1)
 
     def setup_content(self):
-        if self.data:
-            self.content = self.data
+        self.content = self.data
 
     # Callback function for remote observers
     def handle_event(self, event=None):
