@@ -136,8 +136,7 @@ class Panel(object):
             self.window.addnstr(sidebar_pos, self.R, 'o', 1)
 
     def setup_content(self):
-        if self.data:
-            self.content = self.data
+        self.content = self.data
 
     # Callback function for remote observers
     def handle_event(self, event=None):
@@ -257,3 +256,8 @@ class Panel(object):
         self.text_force_right_align(self.B, self.R, BR)
         if refresh:
             self.window.refresh()
+
+    def log(self, msg):
+        import time
+        with open('giterm.log', 'a') as f:
+            f.write(str(time.time()) + ': ' + self.default_title + ': ' + msg)

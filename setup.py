@@ -16,7 +16,7 @@ setup(
     long_description=long_description,
     keywords='git, client, terminal, console',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Console :: Curses',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
+import time
 
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
@@ -8,12 +9,20 @@ from observer import Trigger
 
 
 # Prevent tracking '.goutputstream-*' files (known Ubuntu bug)
-GIT_BLACK_LIST = ['.git/index.lock', '.goutputstream']
+GIT_BLACK_LIST = ['.goutputstream']
 GIT_WHITE_LIST = ['.gitignore', '.gitconfig', '.gitmodules']
 
 
 class FileChangedHandler(FileSystemEventHandler, Trigger):
+    def __init__(self, timeout_in_seconds=None, *args, **kwargs):
+        self.timeout = timeout_in_seconds if timeout_in_seconds else 1
+        self.last_call = time.time()
+        super(FileChangedHandler, self).__init__()
+        print 'timeout: ' + str(self.timeout)
+
     def on_any_event(self, event):
+        if time.time() - self.last_call < self.timeout:
+            return
         path = event.src_path
         if path.startswith('./'):
             path = path[2:]
@@ -28,6 +37,7 @@ class FileChangedHandler(FileSystemEventHandler, Trigger):
                     break
         message = event.event_type + ': ' + path
         message = message[0].upper() + message[1:]
+        self.last_call = time.time()
         self.action(message)
 
     def action(self, msg):
