@@ -38,16 +38,16 @@ Real-time!
 ----------
 
 Every change to the working copy (file edition/move or any Git command)
-refreshes the GUI instantly. You can work as usual, and keep a terminal
-open with giterm to get visual feedback on your actions.
+updates the GUI instantly. You can work as usual, and keep a terminal
+open with giterm to get instant feedback on your actions.
 
 .. image:: assets/screenshot.png
     :alt: screenshot of giterm interface
     :align: center
 
 Giterm essentially *shows* Git information. It does not support git actions
-like commit, checkout, branch switching, committing. Only staging is supported
-at this time.
+like commit, checkout, branch switching, committing. Only staging/unstaging
+is supported at this time.
 
 
 Installation
