@@ -22,14 +22,14 @@ class GitermPanelManager(PanelManager):
     │Branches││ Log history                    │
     │> master││                                │
     │> devel ││                                │
-    │        ││                                │
+    └────────┘│                                │
     │Remotes ││                                │
-    │> origin│└────────────────────────────────┘
-    │        │┌───────────────┐┌───────────────┐
-    │Tags    ││ Staged files  ││               │
-    │        │└───────────────┘│ Diff of       │
-    │Stashes │┌───────────────┐│ selected file │
-    │        ││ Changed files ││               │
+    └────────┘└────────────────────────────────┘
+    │Tags    │┌───────────────┐┌───────────────┐
+    └────────┘│ Staged files  ││               │
+    │Stashes │└───────────────┘│ Diff of       │
+    └────────┘┌───────────────┐│ selected file │
+    │Submod. ││ Changed files ││               │
     └────────┘└───────────────┘└───────────────┘
         """
         height, width = self.stdscr.getmaxyx()
