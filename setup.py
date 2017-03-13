@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from setuptools import setup
 
+__version__ = ''
 exec(open('src/giterm/_version.py').read())
 
 with open("requirements.txt") as f:

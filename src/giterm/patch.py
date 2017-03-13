@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import rungit
 
+
 class Patch(object):
     def __init__(self, file):
         self.file = file

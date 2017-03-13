@@ -64,7 +64,6 @@ class Watcher(object):
 
 
 if __name__ == '__main__':
-    import time
     watchdir = sys.argv[1] if len(sys.argv) > 1 else '.'
     w = Watcher()
     w.start()

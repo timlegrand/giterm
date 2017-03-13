@@ -129,20 +129,19 @@ class Panel(object):
                 if self.active:
                     self.window.addnstr(top, left, '[' + title + ']', n + 2)
                     self.window.chgat(top, left, len(title) + 2, curses.A_BOLD)
-            slider_pos = int(self.topLineNum * self.CH /
-                              (max(len(self.content) - self.CH, 1)))
+            slider_pos = int(
+                self.topLineNum * self.CH /
+                (max(len(self.content) - self.CH, 1)))
             if len(self.content) > self.CH:
                 if slider_pos < self.CT:
-                    ici = 'ici'
                     slider_pos = slider_pos + self.CT
                 if slider_pos > self.CB:
-                    ici = 'la'
                     slider_pos = self.CB
                 self.window.addnstr(slider_pos, self.R, 'o', 1)
         except:
             # Window might just be downsided and is not large enough
             # to draw borders with old dimensions. Let's wait for the
-            # second chance draw and skip this one.
+            # second chance draw and skip this one.
             pass
 
     def setup_content(self):

@@ -3,8 +3,7 @@ import commands
 import os
 
 import textutils
-
-from exception import *
+import exception as ex
 
 
 def run(cmd):
@@ -16,10 +15,10 @@ def git_root_path():
     error, output = run('git rev-parse --show-toplevel')
     if error:
         if error == 32512:
-            raise GitNotFoundException(
+            raise ex.GitNotFoundException(
                 'Git not found. Please install Git first.')
         else:
-            raise NotAGitRepositoryException(
+            raise ex.NotAGitRepositoryException(
                 'Please cd in a Git repository first.')
     return output[0]
 
@@ -159,7 +158,7 @@ def git_diff(path, cached=False):
 
 def run_simple_command(command, path):
     if not path:
-        raise ArgumentException('File name missing.')
+        raise ex.ArgumentException('File name missing.')
     command = 'git %s -- %s' % (command, path)
     code, output = commands.getstatusoutput(command)
     if code != 0:

@@ -7,10 +7,10 @@ import os
 import watch
 import rungit
 import cursutils
+import exception as ex
 
 from gui import GitermPanelManager
 from _version import __version_text__
-from exception import *
 
 
 def keyloop(stdscr):
@@ -83,7 +83,7 @@ def keyloop(stdscr):
 
             import time
             time.sleep(0.5)  # Give a chance to the resize event to complete
-            curses.flushinp()  # prevent interpreting next queued KEY_RESIZE events
+            curses.flushinp()  # prevent interpreting next queued KEY_RESIZE
 
             panels = GitermPanelManager(stdscr)
             active = panels['history'].activate()
@@ -114,7 +114,7 @@ def main(stdscr):
     except Exception as e:
         cursutils.finalize(stdscr)
         t = type(e)
-        if t == NotAGitRepositoryException or t == GitNotFoundException:
+        if t == ex.NotAGitRepositoryException or t == ex.GitNotFoundException:
             print e
         else:
             raise
