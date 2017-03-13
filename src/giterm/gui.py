@@ -216,7 +216,7 @@ class HistoryPanel(StateLinePanel):
                 labels[i] = '(' + b + ')'
             l2 = min(19, int(self.CW * 0.1))
             l3 = min(19, int(self.CW * 0.15))
-            l4 = 8
+            l4 = len(sha1) + 1
             l1 = int(self.CW - l2 - l3 - l4 - 3 * len(' | '))
             message, lm = text.shorten(''.join(labels) + msg, l1)
             author, la = text.shorten(author, l2, dots=False)
