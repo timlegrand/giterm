@@ -119,21 +119,29 @@ class Panel(object):
         self.window.addnstr(line_num, self.CL, short, num_raw_bytes)
 
     def draw_borders(self):
-        self.window.box()
-        top, left, title, n = self.T, self.L + 2, self.title, self.W - 4
-        if title:
-            self.window.addnstr(top, left, ' ' + title + ' ', n)
-            if self.active:
-                self.window.addnstr(top, left, '[' + title + ']', n + 2)
-                self.window.chgat(top, left, len(title) + 2, curses.A_BOLD)
-        sidebar_pos = int(self.topLineNum * self.CH /
-                          (max(len(self.content) - self.CH, 1)))
-        if len(self.content) > self.CH:
-            if sidebar_pos < self.CT:
-                sidebar_pos = sidebar_pos + self.CT
-            if sidebar_pos > self.CB:
-                sidebar_pos = self.CB
-            self.window.addnstr(sidebar_pos, self.R, 'o', 1)
+        try:
+            self.window.box()
+            top, left, title, n = self.T, self.L + 2, self.title, self.W - 4
+            if title:
+                self.window.addnstr(top, left, ' ' + title + ' ', n)
+                if self.active:
+                    self.window.addnstr(top, left, '[' + title + ']', n + 2)
+                    self.window.chgat(top, left, len(title) + 2, curses.A_BOLD)
+            slider_pos = int(self.topLineNum * self.CH /
+                              (max(len(self.content) - self.CH, 1)))
+            if len(self.content) > self.CH:
+                if slider_pos < self.CT:
+                    ici = 'ici'
+                    slider_pos = slider_pos + self.CT
+                if slider_pos > self.CB:
+                    ici = 'la'
+                    slider_pos = self.CB
+                self.window.addnstr(slider_pos, self.R, 'o', 1)
+        except:
+            # Window might just be downsided and is not large enough
+            # to draw borders with old dimensions. Let's wait for the
+            # second chance draw and skip this one.
+            pass
 
     def setup_content(self):
         self.content = self.data
