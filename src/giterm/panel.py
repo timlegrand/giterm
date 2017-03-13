@@ -269,5 +269,5 @@ class Panel(object):
 
     def log(self, msg):
         import time
-        with open('giterm.log', 'a') as f:
-            f.write(str(time.time()) + ': ' + self.default_title + ': ' + msg)
+        with open('../giterm.log', 'a') as f:
+            f.write(str(time.time()) + ': ' + self.title + ': ' + msg + '\n')
