@@ -40,13 +40,15 @@ class PanelManager(OrderedDict):
 class Panel(object):
     """Encapsulates a (sub-)window.
            < W >
-    0,0▒▒▒▒▒ T ▒▒▒▒▒▒▒▒  <── border
-    ▒       CT        ▒  ┐
-  ^ ▒CL             CR▒  │ content goes from
-  H L                 R  │ (CT, CL) to
-  v ▒cursor(y,x)▒     ▒  │ (CB, CR)
-    ▒       CB        ▒  ┘
-    ▒▒▒▒▒▒▒▒ B ▒▒▒▒▒H,W
+    (0,0)▒▒▒ T ▒▒▒▒▒▒▒▒ <── border
+    ▒       CT        ▒ ┐
+    ▒                 o <── slider
+  ^ ▒                 ▒ │
+  H ▒CL             CR▒ │ content goes from
+  v L                 R │ (CT,CL) to (CB,CR)
+    ▒cursor(y,x)▒     ▒ │
+    ▒       CB        ▒ ┘
+    ▒▒▒▒▒▒▒▒ B ▒▒▒(H,W)
     """
 
     def __init__(self, stdscr, h, w, y, x, title=''):
