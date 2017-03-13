@@ -16,6 +16,10 @@ install:
 script:
   - tox -e py27
 
+after_success:
+  - cover
+  - pep8
+
 notifications:
   webhooks:
     urls:
