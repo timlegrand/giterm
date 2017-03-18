@@ -1,3 +1,7 @@
+dist:
+  - trusty
+  - xenial
+
 language:
   - python
 
