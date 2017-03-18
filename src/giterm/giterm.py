@@ -3,14 +3,15 @@
 import curses
 import argparse
 import os
+import six
 
 import watch
 import rungit
 import cursutils
+import exception as ex
 
 from gui import GitermPanelManager
 from _version import __version_text__
-from exception import *
 
 
 def keyloop(stdscr):
@@ -19,7 +20,7 @@ def keyloop(stdscr):
     panels.display()
 
     w = watch.Watcher()
-    for name, panel in panels.iteritems():
+    for name, panel in six.iteritems(panels):
         w.event_handler.subscribe(panel.handle_event)
 
     # Initialize contents
@@ -74,7 +75,30 @@ def keyloop(stdscr):
         elif c == curses.KEY_NPAGE:
             active.move_next_page()
         elif c == curses.KEY_RESIZE:
-            pass  # TODO: handle terminal resize properly (downsize and upsize)
+            w.stop()
+            for name, panel in six.iteritems(panels):
+                w.event_handler.unsubscribe(panel.handle_event)
+            del panels
+            del active
+            del w
+
+            import time
+            time.sleep(0.5)  # Give a chance to the resize event to complete
+            curses.flushinp()  # prevent interpreting next queued KEY_RESIZE
+
+            panels = GitermPanelManager(stdscr)
+            active = panels['history'].activate()
+            panels.display()
+
+            w = watch.Watcher()
+            for name, panel in six.iteritems(panels):
+                w.event_handler.subscribe(panel.handle_event)
+
+            # Initialize contents
+            w.event_handler.fire()
+            panels['changes'].request_diff_in_diff_view(even_not_active=True)
+
+            w.start()
         else:
             pass
 
@@ -91,8 +115,8 @@ def main(stdscr):
     except Exception as e:
         cursutils.finalize(stdscr)
         t = type(e)
-        if t == NotAGitRepositoryException or t == GitNotFoundException:
-            print e
+        if t == ex.NotAGitRepositoryException or t == ex.GitNotFoundException:
+            print(e)
         else:
             raise
     finally:

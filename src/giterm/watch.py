@@ -18,7 +18,7 @@ class FileChangedHandler(FileSystemEventHandler, Trigger):
         self.timeout = timeout_in_seconds if timeout_in_seconds else 1
         self.last_call = time.time()
         super(FileChangedHandler, self).__init__()
-        print 'timeout: ' + str(self.timeout)
+        print('timeout: ' + str(self.timeout))
 
     def on_any_event(self, event):
         if time.time() - self.last_call < self.timeout:
@@ -44,7 +44,7 @@ class FileChangedHandler(FileSystemEventHandler, Trigger):
         if self.callbacks:
             self.fire(content=msg)
         else:
-            print msg
+            print(msg)
 
 
 class Watcher(object):
@@ -64,7 +64,6 @@ class Watcher(object):
 
 
 if __name__ == '__main__':
-    import time
     watchdir = sys.argv[1] if len(sys.argv) > 1 else '.'
     w = Watcher()
     w.start()

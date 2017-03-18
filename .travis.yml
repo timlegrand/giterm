@@ -10,11 +10,15 @@ branches:
     - develop
 
 install:
-  - pip install -r packaging-requirements.txt
+  - pip install tox-travis flake8 nose coverage
   - pip install -r requirements.txt
 
 script:
-  - tox -e py26,py27
+  - tox -e py27
+
+after_success:
+  - tox -e coverage
+  - tox -e pep8
 
 notifications:
   webhooks:

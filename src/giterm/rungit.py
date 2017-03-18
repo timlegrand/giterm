@@ -1,14 +1,31 @@
 # -*- coding: utf-8 -*-
-import commands
 import os
+import sys
 
 import textutils
+import cursutils
 
-from exception import *
+import exception as ex
+
+
+getstatusoutput = None
+if sys.version_info[0] >= 3:  # Python3 subprocess
+    import subprocess
+    def get_status_output(*args, **kwargs):
+        cmd = str(args[0]).split(' ') if len(args) == 1 else args
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = p.communicate()
+        return p.returncode, stdout.decode('utf-8')
+    getstatusoutput = get_status_output
+else:  # Python2 commands
+    import commands
+    def get_status_output(*args, **kwargs):
+        return commands.getstatusoutput(*args, **kwargs)
+    getstatusoutput = get_status_output
 
 
 def run(cmd):
-    code, output = commands.getstatusoutput(cmd)
+    code, output = getstatusoutput(cmd)
     return code, [x for x in output.split('\n') if x]
 
 
@@ -16,10 +33,10 @@ def git_root_path():
     error, output = run('git rev-parse --show-toplevel')
     if error:
         if error == 32512:
-            raise GitNotFoundException(
+            raise ex.GitNotFoundException(
                 'Git not found. Please install Git first.')
         else:
-            raise NotAGitRepositoryException(
+            raise ex.NotAGitRepositoryException(
                 'Please cd in a Git repository first.')
     return output[0]
 
@@ -119,6 +136,23 @@ def git_tags():
     return data
 
 
+def git_raw_diff(path, cached=False):
+    if not path or type(path) is not str:
+        raise Exception('Path not supported: ' + str(path))
+
+    opt = '--cached' if cached else ''
+    cmd = 'git diff {} -- {}'.format(opt, path)
+    error, data = run(cmd)
+    if not data:
+        cmd = 'git diff -- /dev/null %s' % path
+        error, data = run(cmd)
+        if data:
+            error = 0
+    if error:
+        raise Exception('Error executing "' + cmd + '" (error = ' + str(error))
+    return '\n'.join(data)
+
+
 def git_diff(path, cached=False):
     if not path or type(path) is not str:
         raise Exception('Path not supported: ' + str(path))
@@ -142,9 +176,9 @@ def git_diff(path, cached=False):
 
 def run_simple_command(command, path):
     if not path:
-        raise ArgumentException('File name missing.')
+        raise ex.ArgumentException('File name missing.')
     command = 'git %s -- %s' % (command, path)
-    code, output = commands.getstatusoutput(command)
+    code, output = getstatusoutput(command)
     if code != 0:
         raise Exception('Error %s while running "%s"' % (code, command))
 
@@ -158,13 +192,13 @@ def git_unstage_file(path):
 
 
 if __name__ == '__main__':
-    print git_root_path()
-    print git_changed()
-    print git_staged()
-    print git_history()
-    print git_branches()
-    print git_stashes()
-    print git_remotes()
-    print git_submodules()
-    print git_tags()
-    print git_diff(path='src/giterm/rungit.py')
+    print(git_root_path())
+    print(git_changed())
+    print(git_staged())
+    print(git_history())
+    print(git_branches())
+    print(git_stashes())
+    print(git_remotes())
+    print(git_submodules())
+    print(git_tags())
+    print(git_diff(path='src/giterm/rungit.py'))

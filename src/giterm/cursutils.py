@@ -2,6 +2,7 @@
 import curses
 import pdb
 import sys
+import time
 
 
 screen = None
@@ -34,6 +35,12 @@ def debug(stdscr=None):
     users_frame = sys._getframe().f_back  # One frame up, outside this function
     debugger.interaction(users_frame, None)
 
+
+def log(msg):
+    with open('../giterm.log', 'a') as f:
+        full_msg = '{:<18}'.format(str(time.time())) + ': ' + str(msg)
+        full_msg = full_msg + '\n' if full_msg[-1] != '\n' else full_msg
+        f.write(full_msg)
 
 # Use with:
 # import cursutils
