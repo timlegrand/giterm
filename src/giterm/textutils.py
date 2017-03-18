@@ -15,7 +15,10 @@ def shorten(string, size, dots=True):
             printable = printable[:size - 3] + '...'
         else:
             printable = printable[:size]
-    return printable.encode(code) if sys.version_info[0] <= 2 else printable, len(string)
+    if sys.version_info[0] <= 2:
+        return printable.encode(code), len(string)
+    else:
+        return printable, len(string)
 
 
 def blocks(iterable, start_pattern):
