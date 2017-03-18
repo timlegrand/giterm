@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import six
+
 from threading import Timer
 
 
@@ -42,23 +44,23 @@ if __name__ == '__main__':
 
     def cancel_with_logging(self):
         self.timer.cancel()
-        print 'Timer reset.'
+        print('Timer reset.')
 
     Postponer.cancel = cancel_with_logging
 
     def print_args(args, kwargs):
         if args or kwargs:
             arguments = [x for x in args]
-            arguments += [k + '=' + x for k, x in kwargs.iteritems()]
+            arguments += [k + '=' + x for k, x in six.iteritems(kwargs)]
         else:
             arguments = 'no arguments'
         return arguments
 
     def please_work(*args, **kwargs):
-        print 'please_work() executed with: %s' % print_args(args, kwargs)
+        print('please_work() executed with: %s' % print_args(args, kwargs))
 
     def no_do_that_instead(*args, **kwargs):
-        print 'no_that_instead() executed with: %s' % print_args(args, kwargs)
+        print('no_that_instead() executed with: %s' % print_args(args, kwargs))
 
     # Instanciation does not start the timer
     p = Postponer(timeout_in_seconds=1.0)

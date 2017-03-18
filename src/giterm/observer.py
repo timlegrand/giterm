@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+import six
 
 
 class Event(object):
     def __init__(self, **kwargs):
-        for k, v in kwargs.iteritems():
+        for k, v in six.iteritems(kwargs):
             setattr(self, k, v)
 
 
@@ -26,10 +27,10 @@ class Trigger(object):
 if __name__ == '__main__':
 
     def callback1(event):
-        print 'Callback #1 got fired with: ' + event.message
+        print('Callback #1 got fired with: ' + event.message)
 
     def callback2(event):
-        print 'Callback #2 got fired with: ' + event.message
+        print('Callback #2 got fired with: ' + event.message)
 
     o = Trigger()
     o.subscribe(callback1)

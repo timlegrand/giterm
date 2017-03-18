@@ -3,6 +3,7 @@
 import curses
 import argparse
 import os
+import six
 
 import watch
 import rungit
@@ -19,7 +20,7 @@ def keyloop(stdscr):
     panels.display()
 
     w = watch.Watcher()
-    for name, panel in panels.iteritems():
+    for name, panel in six.iteritems(panels):
         w.event_handler.subscribe(panel.handle_event)
 
     # Initialize contents
@@ -75,7 +76,7 @@ def keyloop(stdscr):
             active.move_next_page()
         elif c == curses.KEY_RESIZE:
             w.stop()
-            for name, panel in panels.iteritems():
+            for name, panel in six.iteritems(panels):
                 w.event_handler.unsubscribe(panel.handle_event)
             del panels
             del active
@@ -90,7 +91,7 @@ def keyloop(stdscr):
             panels.display()
 
             w = watch.Watcher()
-            for name, panel in panels.iteritems():
+            for name, panel in six.iteritems(panels):
                 w.event_handler.subscribe(panel.handle_event)
 
             # Initialize contents
@@ -115,7 +116,7 @@ def main(stdscr):
         cursutils.finalize(stdscr)
         t = type(e)
         if t == ex.NotAGitRepositoryException or t == ex.GitNotFoundException:
-            print e
+            print(e)
         else:
             raise
     finally:

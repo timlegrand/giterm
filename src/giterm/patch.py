@@ -28,4 +28,4 @@ class Patch(object):
 if __name__ == '__main__':
     p = Patch('src/giterm/patch.py')
     # p.apply()
-    print p
+    print(p)

@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 import locale
-
+import sys
 
 locale.setlocale(locale.LC_ALL, '')
 code = locale.getpreferredencoding()
 
 
 def shorten(string, size, dots=True):
-    printable = string.decode(code)
+    printable = string.decode(code) if sys.version_info[0] <= 2 else string
     # Is that really efficient? Shouldn't we store the raw data
     # in self.content instead?
     if len(printable) > size:
@@ -15,7 +15,7 @@ def shorten(string, size, dots=True):
             printable = printable[:size - 3] + '...'
         else:
             printable = printable[:size]
-    return printable.encode(code), len(string)
+    return printable.encode(code) if sys.version_info[0] <= 2 else printable, len(string)
 
 
 def blocks(iterable, start_pattern):

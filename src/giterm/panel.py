@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 import curses
+import six
 
 from itertools import cycle
 from collections import OrderedDict
 
 import textutils
+import cursutils
 
 
 class PanelManager(OrderedDict):
@@ -16,11 +18,11 @@ class PanelManager(OrderedDict):
     def toggle(self, reverse=False):
         if reverse:
             items = self.items()
-            items.reverse()
+            reversed(items)
             reverse = OrderedDict(items)
-            it = cycle(reverse.iteritems())
+            it = cycle(reversed(list(six.iteritems(self))))
         else:
-            it = cycle(self.iteritems())
+            it = cycle(six.iteritems(self))
         for k, panel in it:
             if panel.active:
                 panel.deactivate()
@@ -29,7 +31,7 @@ class PanelManager(OrderedDict):
     def display(self):
         curses.curs_set(0)
         active = None
-        for k, panel in self.iteritems():
+        for k, panel in six.iteritems(self):
             panel.display()
             if panel.active:
                 active = panel
@@ -267,6 +269,4 @@ class Panel(object):
             self.window.refresh()
 
     def log(self, msg):
-        import time
-        with open('../giterm.log', 'a') as f:
-            f.write(str(time.time()) + ': ' + self.title + ': ' + msg + '\n')
+        cursutils.log(self.title + ': ' + msg)
