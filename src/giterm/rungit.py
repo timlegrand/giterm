@@ -3,24 +3,34 @@ import os
 import sys
 
 import textutils
-import cursutils
 
 import exception as ex
 
 
 getstatusoutput = None
-if sys.version_info[0] >= 3:  # Python3 subprocess
+
+# With Python3 subprocess
+if sys.version_info[0] >= 3:
     import subprocess
+
     def get_status_output(*args, **kwargs):
         cmd = str(args[0]).split(' ') if len(args) == 1 else args
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
         stdout, stderr = p.communicate()
         return p.returncode, stdout.decode('utf-8')
+
     getstatusoutput = get_status_output
-else:  # Python2 commands
+
+# With Python2 commands
+else:
     import commands
+
     def get_status_output(*args, **kwargs):
         return commands.getstatusoutput(*args, **kwargs)
+
     getstatusoutput = get_status_output
 
 
