@@ -1,17 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import curses
 import argparse
 import os
 import six
 
-import watch
-import rungit
-import cursutils
-import exception as ex
+import giterm.watch as watch
+import giterm.rungit as run
+import giterm.cursutils as cu
+import giterm.exception as ex
 
-from gui import GitermPanelManager
-from _version import __version_text__
+from giterm.gui import GitermPanelManager
+from giterm._version import __version_text__
 
 
 def keyloop(stdscr):
@@ -106,14 +108,14 @@ def keyloop(stdscr):
 
 
 def main(stdscr):
-    cursutils.init(stdscr)
+    cu.init(stdscr)
     current_dir = os.getcwd()
     try:
-        git_root_dir = rungit.git_root_path()
+        git_root_dir = run.git_root_path()
         os.chdir(git_root_dir)
         keyloop(stdscr)
     except Exception as e:
-        cursutils.finalize(stdscr)
+        cu.finalize(stdscr)
         t = type(e)
         if t == ex.NotAGitRepositoryException or t == ex.GitNotFoundException:
             print(e)

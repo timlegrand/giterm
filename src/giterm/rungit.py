@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import os
 import sys
 
-import textutils
-
-import exception as ex
+import giterm.textutils as textutils
+import giterm.exception as ex
 
 
 getstatusoutput = None

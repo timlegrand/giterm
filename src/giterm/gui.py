@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import curses
 import threading
 
-from panel import Panel, PanelManager
-from postponer import Postponer
+from giterm.panel import Panel, PanelManager
+from giterm.postponer import Postponer
 
-import rungit
-
-import textutils as text
+import giterm.rungit as rungit
+import giterm.textutils as text
 
 
 class GitermPanelManager(PanelManager):
