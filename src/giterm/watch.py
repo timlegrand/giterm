@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import sys
 import time
 
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
-from observer import Trigger
+from giterm.observer import Trigger
 
 
 # Prevent tracking '.goutputstream-*' files (known Ubuntu bug)

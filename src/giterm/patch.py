@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-import rungit
+from __future__ import absolute_import
+
+import giterm.rungit as rungit
 
 
 class Patch(object):
