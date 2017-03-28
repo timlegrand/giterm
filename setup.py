@@ -35,7 +35,8 @@ setup(
     download_url='https://github.com/timlegrand/giterm',
     license='BSD 2-Clause',
     packages=['giterm'],
-    package_dir={'giterm': 'src/giterm'},
+    # package_dir={'giterm': 'src/giterm'},
+    package_dir={'': 'src'},
     install_requires=required,
     entry_points={'console_scripts': ['giterm = giterm.giterm:_main']},
     )
