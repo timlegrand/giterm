@@ -21,10 +21,9 @@
 Features
 ========
 
-Giterm brings information about the current status of your Git working
-copy right in your terminal, *real-time*.
+Giterm is a ncurses-based terminal GUI for Git. It brings information about the current status of your Git working copy right in your terminal, *real-time*.
 
-It shows in a single view:
+It exposes in a single view:
 
 - local branches, and which branch you’re currently on
 - remote branches, and which branch the current local branch is
@@ -45,9 +44,7 @@ open with giterm to get instant feedback on your actions.
     :alt: screenshot of giterm interface
     :align: center
 
-Giterm essentially *shows* Git information. It does not support git actions
-like commit, checkout, branch switching, committing. Only staging/unstaging
-is supported at this time.
+.. note:: Giterm essentially *shows* Git information. It does not support git actions like commit, checkout, branch switching, committing. Only staging/unstaging is supported at this time.
 
 
 Installation
@@ -63,6 +60,8 @@ If you don’t have ``pip`` installed yet:
 
     curl -s https://bootstrap.pypa.io/get-pip.py | sudo python
     pip install giterm
+
+.. note:: Windows users beware, Python for Windows doesn't come with curses. You need to visit `curses repository <http://www.lfd.uci.edu/~gohlke/pythonlibs/#curses>`_, download the version of curses that corresponds to your Windows and version of Python, and then pip install the whl file with the python you plan on using.
 
 
 Usage
