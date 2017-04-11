@@ -10,7 +10,6 @@ import six
 import giterm.watch as watch
 import giterm.rungit as run
 import giterm.cursutils as cu
-import giterm.exception as ex
 
 from giterm.gui import GitermPanelManager
 from giterm._version import __version_text__
@@ -114,13 +113,8 @@ def main(stdscr):
         git_root_dir = run.git_root_path()
         os.chdir(git_root_dir)
         keyloop(stdscr)
-    except Exception as e:
-        cu.finalize(stdscr)
-        t = type(e)
-        if t == ex.NotAGitRepositoryException or t == ex.GitNotFoundException:
-            print(e)
-        else:
-            raise
+    except:
+        raise
     finally:
         os.chdir(current_dir)
 

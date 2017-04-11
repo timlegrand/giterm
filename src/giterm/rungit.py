@@ -41,7 +41,11 @@ def run(cmd):
 
 
 def git_root_path():
-    error, output = run('git rev-parse --show-toplevel')
+    try:
+        error, output = run('git rev-parse --show-toplevel')
+    except Exception.FileNotFoundError:
+        raise ex.GitNotFoundException(
+            'Git not found. Please install Git first.')
     if error:
         if error == 32512:
             raise ex.GitNotFoundException(
