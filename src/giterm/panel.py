@@ -69,8 +69,8 @@ class Panel(object):
         self.middle = (self.H // 2, self.W // 2)
         self.active = False
         self.topLineNum = 0
-        self.selected_line = -1  # Content-relative line number [0..N-1]
-        self.hovered_line = 0  # Content-relative line number [0..N-1]
+        self.selected_content_line = -1  # Content-relative line number [0..N-1]
+        self.hovered_content_line = 0  # Content-relative line number [0..N-1]
 
     def display(self):
         self.window.erase()
@@ -104,7 +104,7 @@ class Panel(object):
             self.cursor_y = self.allowed_cursor_range_end
 
     def draw_hover(self):
-        self.hovered_line = self.cursor_y + self.topLineNum - self.CT
+        self.hovered_content_line = self.cursor_y + self.topLineNum - self.CT
         y = self.cursor_y
         if (self.active and y >= self.CT and y <= self.CB and self.content):
             index = y + self.topLineNum - self.CT
@@ -114,8 +114,10 @@ class Panel(object):
             self.window.chgat(y, self.CL, self.CR, mode | curses.A_REVERSE)
 
     def draw_selected(self):
-        if self.selected_line != -1:
-            y = self.selected_line + self.CT - self.topLineNum
+        if self.selected_content_line != -1:
+            y = self.selected_content_line + self.CT - self.topLineNum
+            if y < self.CT or y > self.CB:
+                return
             char = self.window.inch(y, self.CL)
             attr = char & curses.A_ATTRIBUTES
             self.window.chgat(y, self.CL, self.CR, attr | curses.A_BOLD)
@@ -158,14 +160,14 @@ class Panel(object):
         self.display()
 
     def select(self):
-        if self.hovered_line == self.selected_line:
-            self.selected_line = -1
+        if self.hovered_content_line == self.selected_content_line:
+            self.selected_content_line = -1
         else:
-            self.selected_line = self.hovered_line
+            self.selected_content_line = self.hovered_content_line
         self.display()
 
     def unselect(self):
-        self.selected_line = -1
+        self.selected_content_line = -1
         self.display()
 
     def activate(self):
@@ -236,7 +238,7 @@ class Panel(object):
             self.topLineNum = 0
         else:
             self.topLineNum -= self.CH
-        self.hovered_line = self.topLineNum
+        self.hovered_content_line = self.topLineNum
         self.move_cursor()
 
     def move_next_page(self):
@@ -244,11 +246,11 @@ class Panel(object):
             self.topLineNum += self.CH
         else:
             return
-        self.hovered_line = self.topLineNum
+        self.hovered_content_line = self.topLineNum
         self.move_cursor()
 
     def move_cursor(self):
-        self.hovered_line = self.topLineNum + self.cursor_y - self.CT
+        self.hovered_content_line = self.topLineNum + self.cursor_y - self.CT
         self.window.move(self.cursor_y, self.cursor_x)
         self.display()
 
