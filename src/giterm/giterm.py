@@ -36,7 +36,7 @@ def keyloop(stdscr):
             c = chr(c)
             if c in ' \n':  # 'SPACE BAR' or 'ENTER' hit
                 active.select()
-            elif c in 'Qq':
+            elif c in 'Qq' or c == chr(27):  # 27 is Escape key
                 break
             elif c == '\t':
                 active = panels.toggle()
@@ -125,6 +125,10 @@ def _main():
     parser.add_argument(
         '-v', '--version', action='version', version=__version_text__)
     parser.parse_args()
+
+    # Setup ESCAPE key
+    os.environ.setdefault('ESCDELAY', '5')
+
     curses.wrapper(main)
 
 
