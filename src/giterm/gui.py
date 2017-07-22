@@ -17,6 +17,7 @@ class GitermPanelManager(PanelManager):
     def __init__(self, stdscr):
         super(GitermPanelManager, self).__init__(stdscr)
         self.create_panels()
+        self.pops = 0
 
     def create_panels(self):
         """Creates a graphical-like UI:
@@ -38,6 +39,7 @@ class GitermPanelManager(PanelManager):
         if height < 8 or width < 40:
             raise Exception("Height and width must be at least 8x40.\
                 Currently: %sx%s" % (height, width))
+        self.middle_point = height // 2, width // 2
         # Following sizes are percentages (e.g. w_30 is 30% of screen width)
         w_20 = min(max(width // 5, 20), 25)
         w_30 = width // 3
@@ -100,6 +102,24 @@ class GitermPanelManager(PanelManager):
         self['stage'].handle_event()
         self['changes'].handle_event()
 
+    def popup(self, title, msg):
+        self.pops += 1
+        t, l = self.middle_point
+        h, w = 12, 50
+        self.message_box = Panel(
+            self.stdscr,
+            h, w, t - h // 2, l - w // 2,
+            title=title + str(self.pops))
+        self.message_box.content = [
+            '''I'm a cute popup message box''',
+            '''Close me if you dare!''']
+        self.message_box.display()
+        return self.message_box.activate()
+
+    def popup_close(self):
+        del self.message_box
+        self.pops = 0
+        self.display()
 
 class Diff(Panel):
 
