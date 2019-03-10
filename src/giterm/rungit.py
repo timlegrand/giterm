@@ -6,6 +6,7 @@ import sys
 
 import shlex
 
+import giterm.cursutils
 import giterm.textutils as textutils
 import giterm.exception as ex
 
@@ -39,6 +40,8 @@ else:
 
 def run(cmd):
     code, output = getstatusoutput(cmd)
+    if code:
+        giterm.cursutils.log("Command '{}' returned status {}".format(cmd, code))
     return code, [x for x in output.split('\n') if x]
 
 
