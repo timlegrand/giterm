@@ -4,7 +4,7 @@ from __future__ import absolute_import
 import curses
 import pdb
 import sys
-import time
+import datetime
 
 
 screen = None
@@ -39,8 +39,8 @@ def debug(stdscr=None):
 
 
 def log(msg):
-    with open('../giterm.log', 'a') as f:
-        full_msg = '{:<18}'.format(str(time.time())) + ': ' + str(msg)
+    with open('./giterm.log', 'a') as f:
+        full_msg = '{:<18}'.format(str(datetime.datetime.now().isoformat())) + ': ' + str(msg)
         full_msg = full_msg + '\n' if full_msg[-1] != '\n' else full_msg
         f.write(full_msg)
 
