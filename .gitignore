@@ -13,3 +13,6 @@ __pycache__/
 *.cache
 cover/
 .coverage
+
+# editors
+.vscode/
