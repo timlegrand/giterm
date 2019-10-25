@@ -14,5 +14,6 @@ __pycache__/
 cover/
 .coverage
 
-# editors
+# editors and linters
 .vscode/
+.mypy_cache/
