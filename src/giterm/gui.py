@@ -1,10 +1,11 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 from __future__ import absolute_import
 
 import curses
 import threading
 
-from giterm.panel import Panel, PanelManager
+from giterm.panel import Panel
+from giterm.panelmanager import PanelManager
 from giterm.postponer import Postponer
 
 import giterm.rungit as rungit
