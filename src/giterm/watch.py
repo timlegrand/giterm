@@ -20,7 +20,6 @@ class FileChangedHandler(FileSystemEventHandler, Trigger):
         self.timeout = timeout_in_seconds if timeout_in_seconds else 1
         self.last_call = time.time()
         super(FileChangedHandler, self).__init__()
-        print('timeout: ' + str(self.timeout))
 
     def on_any_event(self, event):
         if time.time() - self.last_call < self.timeout:
