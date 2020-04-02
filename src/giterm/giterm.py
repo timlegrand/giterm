@@ -106,9 +106,15 @@ def keyloop(stdscr):
     w.stop()
 
 
-def main(stdscr):
+def main(stdscr, repo=None):
     cu.init(stdscr)
     current_dir = os.getcwd()
+
+    # If we were given a repository directory,
+    #   use it instead of our cwd.
+    if repo:
+        os.chdir(repo)
+
     try:
         git_root_dir = run.git_root_path()
         os.chdir(git_root_dir)
@@ -124,12 +130,14 @@ def _main():
         description='''A terminal-based GUI client for Git.''')
     parser.add_argument(
         '-v', '--version', action='version', version=__version_text__)
-    parser.parse_args()
+    parser.add_argument('repo',
+        nargs='?', help='(Optional) Path to git repository; will default to cwd if not given.')
+    args = parser.parse_args()
 
     # Setup ESCAPE key
     os.environ.setdefault('ESCDELAY', '5')
 
-    curses.wrapper(main)
+    curses.wrapper(main, repo=args.repo)
 
 
 if __name__ == '__main__':
