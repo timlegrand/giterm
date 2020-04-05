@@ -14,8 +14,10 @@ import giterm.cursutils as cu
 from giterm.gui import GitermPanelManager
 from giterm._version import __version_text__
 
+from git import Git
 
-def keyloop(stdscr):
+
+def keyloop(stdscr, repo):
     panels = GitermPanelManager(stdscr)
     active = panels['history'].activate()
     panels.display()
@@ -116,9 +118,10 @@ def main(stdscr, repo=None):
         os.chdir(repo)
 
     try:
-        git_root_dir = run.git_root_path()
-        os.chdir(git_root_dir)
-        keyloop(stdscr)
+        repo = Git(os.getcwd())
+        # git_root_dir = run.git_root_path()
+        # os.chdir(git_root_dir)
+        keyloop(stdscr, repo)
     except:
         raise
     finally:

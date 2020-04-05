@@ -17,3 +17,5 @@ cover/
 # editors and linters
 .vscode/
 .mypy_cache/
+
+venv/

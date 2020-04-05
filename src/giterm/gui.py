@@ -48,7 +48,7 @@ class GitermPanelManager(PanelManager):
         h_26 = h_51 - h_25
         h_l = height // 5
         h_br = height - 4 * h_l
-        self['branches'] = StateLinePanel(
+        self['branches'] = BranchesPanel(
             self.stdscr,
             h_br, w_20, 0, 0, title='Branches')
         self['remotes'] = Panel(
@@ -79,7 +79,6 @@ class GitermPanelManager(PanelManager):
         self['changes'].rungit = rungit.git_changed
         self['stage'].rungit = rungit.git_staged
         self['history'].rungit = rungit.git_history
-        self['branches'].rungit = rungit.git_branches
         self['remotes'].rungit = rungit.git_remotes
         self['stashes'].rungit = rungit.git_stashes
         self['submodules'].rungit = rungit.git_submodules
@@ -91,15 +90,15 @@ class GitermPanelManager(PanelManager):
 
     def stage_file(self, path):
         rungit.git_stage_file(path)
-        self['stage'].handle_event(None)
-        self['changes'].handle_event(None)
+        self['stage'].handle_event()
+        self['changes'].handle_event()
 
     def unstage_file(self, path):
         if not path:
             raise Exception('path is mandatory')
         rungit.git_unstage_file(path)
-        self['stage'].handle_event(None)
-        self['changes'].handle_event(None)
+        self['stage'].handle_event()
+        self['changes'].handle_event()
 
 
 class Diff(Panel):
@@ -184,10 +183,7 @@ class StagerUnstager(Panel):
                 args=[filepath, (self.title == 'Staging Area')])
 
     def select(self):
-        if self.selected_content_line == self.hovered_content_line:
-            self.selected_content_line = -1
-        else:
-            self.selected_content_line = self.hovered_content_line
+        self.update_selection()
         if self.selected_content_line != -1:
             self.selected_file = self.filename_from_linenum(self.selected_content_line)
             self.cursor_y = max(self.cursor_y - 1, self.CT)
@@ -198,7 +194,7 @@ class StagerUnstager(Panel):
 
 class StateLinePanel(Panel):
 
-    def handle_event(self, event):
+    def handle_event(self, event=None):
         self.content = self.rungit()
         for i, line in enumerate(self.content):
             if line.startswith('*'):
@@ -240,3 +236,20 @@ class HistoryPanel(StateLinePanel):
                 self.decorations[i] = curses.A_BOLD
                 self.content[i] = line[1:]
         self.display()
+
+class BranchesPanel(StateLinePanel):
+    def __init__(self, *args, **kwargs):
+        StateLinePanel.__init__(self, *args, **kwargs)
+        self.rungit = rungit.git_branches
+
+    def select(self):
+        self.update_selection()
+        if self.selected_content_line != -1:
+            selected_branch = self.content[self.selected_content_line]
+            self.decorations = {}
+            self.action(selected_branch)
+        self.display()
+
+    def action(self, branch):
+        rungit.git_checkout_branch(branch)
+        self.handle_event()

@@ -206,6 +206,8 @@ def git_stage_file(path):
 def git_unstage_file(path):
     run_simple_command('reset', path)
 
+def git_checkout_branch(branch):
+    error, data = run(f'git checkout {branch}')
 
 if __name__ == '__main__':
     print(git_root_path())

@@ -123,13 +123,17 @@ class Panel(object):
     def handle_event(self, event=None):
         self.data = self.rungit()
         self.setup_content()
+        self.log(f'{self.content} {self.data}')
         self.display()
 
-    def select(self):
+    def update_selection(self):
         if self.hovered_content_line == self.selected_content_line:
             self.selected_content_line = -1
         else:
             self.selected_content_line = self.hovered_content_line
+
+    def select(self):
+        self.update_selection()
         self.display()
 
     def unselect(self):
