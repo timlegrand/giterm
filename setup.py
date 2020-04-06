@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from setuptools import setup
+from setuptools import setup, find_packages
 
 __version__ = ''
 exec(open('src/giterm/_version.py').read())
@@ -34,7 +34,7 @@ setup(
     url='https://github.com/timlegrand/giterm',
     download_url='https://github.com/timlegrand/giterm',
     license='BSD 2-Clause',
-    packages=['giterm'],
+    packages=['giterm', 'giterm.panels'],
     # package_dir={'giterm': 'src/giterm'},
     package_dir={'': 'src'},
     install_requires=required,

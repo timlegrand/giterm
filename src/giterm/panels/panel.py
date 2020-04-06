@@ -260,3 +260,12 @@ class Popup(Panel):
     
     def select(self):
         pass
+
+class StateLinePanel(Panel):
+    def handle_event(self, event=None):
+        self.content = self.rungit()
+        for i, line in enumerate(self.content):
+            if line.startswith('*'):
+                self.decorations[i] = curses.A_BOLD
+                self.content[i] = line[1:]
+        self.display()
