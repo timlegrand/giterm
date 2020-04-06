@@ -17,7 +17,6 @@ class GitermPanelManager(PanelManager):
     def __init__(self, stdscr):
         super(GitermPanelManager, self).__init__(stdscr)
         self.create_panels()
-        self.pops = 0
 
     def create_panels(self):
         """Creates a graphical-like UI:
@@ -35,48 +34,52 @@ class GitermPanelManager(PanelManager):
     │Submod. ││ Changed files ││               │
     └────────┘└───────────────┘└───────────────┘
         """
-        height, width = self.stdscr.getmaxyx()
-        if height < 8 or width < 40:
-            raise Exception("Height and width must be at least 8x40.\
-                Currently: %sx%s" % (height, width))
-        self.middle_point = height // 2, width // 2
         # Following sizes are percentages (e.g. w_30 is 30% of screen width)
-        w_20 = min(max(width // 5, 20), 25)
-        w_30 = width // 3
-        w_50 = width - w_30 - w_20
-        h_49 = height // 2
-        h_51 = height - h_49
+        w_20 = min(max(self.width // 5, 20), 25)
+        w_30 = self.width // 3
+        w_50 = self.width - w_30 - w_20
+        h_49 = self.height // 2
+        h_51 = self.height - h_49
         h_25 = h_51 // 2
         h_26 = h_51 - h_25
-        h_l = height // 5
-        h_br = height - 4 * h_l
-        self['branches'] = BranchesPanel(
-            self.stdscr,
-            h_br, w_20, 0, 0, title='Branches')
-        self['remotes'] = Panel(
-            self.stdscr,
-            h_l, w_20, h_br, 0, title='Remotes')
-        self['tags'] = StateLinePanel(
-            self.stdscr,
-            h_l, w_20, h_br + h_l, 0, title='Tags')
-        self['stashes'] = Panel(
-            self.stdscr,
-            h_l, w_20, h_br + 2 * h_l, 0, title='Stashes')
-        self['submodules'] = Panel(
-            self.stdscr,
-            h_l, w_20, h_br + 3 * h_l, 0, title='Submodules')
-        self['history'] = HistoryPanel(
-            self.stdscr,
-            h_49, w_30 + w_50, 0, w_20, title='History')
-        self['stage'] = StagerUnstager(
+        h_l = self.height // 5
+        h_br = self.height - 4 * h_l
+        self.add('branches', BranchesPanel(
             self, self.stdscr,
-            h_25, w_30, h_49, w_20, title='Staging Area')
-        self['changes'] = StagerUnstager(
+            h_br, w_20, 0, 0, title='Branches'
+        ))
+        self.add('remotes', Panel(
             self, self.stdscr,
-            h_26, w_30, h_49 + h_25, w_20, title='Changes')
-        self['diff'] = Diff(
-            self.stdscr,
-            h_51, w_50, h_49, w_20 + w_30, title='Diff View')
+            h_l, w_20, h_br, 0, title='Remotes'
+        ))
+        self.add('tags', StateLinePanel(
+            self, self.stdscr,
+            h_l, w_20, h_br + h_l, 0, title='Tags'
+        ))
+        self.add('stashes', Panel(
+            self, self.stdscr,
+            h_l, w_20, h_br + 2 * h_l, 0, title='Stashes'
+        ))
+        self.add('submodules', Panel(
+            self, self.stdscr,
+            h_l, w_20, h_br + 3 * h_l, 0, title='Submodules'
+        ))
+        self.add('history', HistoryPanel(
+            self, self.stdscr,
+            h_49, w_30 + w_50, 0, w_20, title='History'
+        ))
+        self.add('stage', StagerUnstager(
+            self, self.stdscr,
+            h_25, w_30, h_49, w_20, title='Staging Area'
+        ))
+        self.add('changes', StagerUnstager(
+            self, self.stdscr,
+            h_26, w_30, h_49 + h_25, w_20, title='Changes'
+        ))
+        self.add('diff', Diff(
+            self, self.stdscr,
+            h_51, w_50, h_49, w_20 + w_30, title='Diff View'
+        ))
 
         self['changes'].rungit = rungit.git_changed
         self['stage'].rungit = rungit.git_staged
@@ -101,25 +104,6 @@ class GitermPanelManager(PanelManager):
         rungit.git_unstage_file(path)
         self['stage'].handle_event()
         self['changes'].handle_event()
-
-    def popup(self, title, msg):
-        self.pops += 1
-        t, l = self.middle_point
-        h, w = 12, 50
-        self.message_box = Panel(
-            self.stdscr,
-            h, w, t - h // 2, l - w // 2,
-            title=title + str(self.pops))
-        self.message_box.content = [
-            '''I'm a cute popup message box''',
-            '''Close me if you dare!''']
-        self.message_box.display()
-        return self.message_box.activate()
-
-    def popup_close(self):
-        del self.message_box
-        self.pops = 0
-        self.display()
 
 class Diff(Panel):
 
@@ -160,9 +144,8 @@ class Diff(Panel):
 
 class StagerUnstager(Panel):
 
-    def __init__(self, parent, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(StagerUnstager, self).__init__(*args, **kwargs)
-        self.parent = parent
         self.default_title = self.title
         self.postponer = Postponer(timeout_in_seconds=0.3)
 
@@ -224,7 +207,6 @@ class StateLinePanel(Panel):
 
 
 class HistoryPanel(StateLinePanel):
-
     def handle_event(self, event):
         data = self.rungit()
         self.content = []
@@ -271,5 +253,9 @@ class BranchesPanel(StateLinePanel):
         self.display()
 
     def action(self, branch):
-        rungit.git_checkout_branch(branch)
-        self.handle_event()
+        error, output = rungit.git_checkout_branch(branch)
+        if error:
+            self.selected_content_line = -1
+            self.parent.popup('Branch error', str(output))
+        else:
+            self.handle_event()

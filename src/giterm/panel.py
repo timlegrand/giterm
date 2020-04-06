@@ -21,7 +21,9 @@ class Panel(object):
     ▒▒▒▒▒▒▒▒ B ▒▒▒(H,W)
     """
 
-    def __init__(self, stdscr, h, w, y, x, title=''):
+    def __init__(self, parent, stdscr, h, w, y, x, title=''):
+        self.parent = parent
+        self.call_on_display = True
         self.content = []
         self.data = []
         self.decorations = {}
@@ -46,6 +48,7 @@ class Panel(object):
         self.draw_hover()
         self.draw_selected()
         self.window.refresh()
+        self.parent.on_display()
 
     def draw_content(self):
         top = self.topLineNum
@@ -244,3 +247,16 @@ class Panel(object):
 
     def log(self, msg):
         cursutils.log(self.title + ': ' + msg)
+
+class Popup(Panel):
+    def display(self):
+        self.window.erase()
+        self.draw_borders()
+        self.draw_content()
+        self.check_cursor_position()
+        self.draw_hover()
+        self.draw_selected()
+        self.window.refresh()
+    
+    def select(self):
+        pass

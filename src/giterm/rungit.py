@@ -7,7 +7,9 @@ import shlex
 
 import giterm.textutils as textutils
 import giterm.exception as ex
+import git
 
+global repo
 
 getstatusoutput = None
 
@@ -35,6 +37,10 @@ else:
 
     getstatusoutput = get_status_output
 
+def create_repo(dir=os.getcwd()):
+    global repo
+
+    repo = git.Git(dir)
 
 def run(cmd):
     code, output = getstatusoutput(cmd)
@@ -207,7 +213,13 @@ def git_unstage_file(path):
     run_simple_command('reset', path)
 
 def git_checkout_branch(branch):
-    error, data = run(f'git checkout {branch}')
+    global repo
+    # error, data = run(f'git checkout {branch}')
+    try:
+        output = repo.checkout(branch)
+        return (False, output)
+    except Exception as e:
+        return (True, str(e))
 
 if __name__ == '__main__':
     print(git_root_path())

@@ -19,3 +19,4 @@ cover/
 .mypy_cache/
 
 venv/
+*.log

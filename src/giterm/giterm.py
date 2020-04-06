@@ -14,12 +14,9 @@ import giterm.cursutils as cu
 from giterm.gui import GitermPanelManager
 from giterm._version import __version_text__
 
-from git import Git
-
-
-def keyloop(stdscr, repo):
+def keyloop(stdscr):
     panels = GitermPanelManager(stdscr)
-    active = panels['history'].activate()
+    panels.active = 'history'
     panels.display()
 
     w = watch.Watcher()
@@ -37,58 +34,50 @@ def keyloop(stdscr, repo):
         if 0 < c < 256:
             c = chr(c)
             if c in ' \n':  # 'SPACE BAR' or 'ENTER' hit
-                active.select()
+                panels.select()
             elif c in 'Qq' or c == chr(27):  # 27 is Escape key
-                if panels.pops >= 1:
+                if panels.pop:
                     panels.popup_close()
-                    continue
-                break
-            elif c == '\t':
-                active = panels.toggle()
-            elif c == 'h':
-                active.deactivate()
-                active = panels['history'].activate()
-            elif c == 'c':
-                active.deactivate()
-                active = panels['changes'].activate()
-            elif c == 's':
-                active.deactivate()
-                active = panels['stage'].activate()
-            elif c == 'd':
-                active.deactivate()
-                active = panels['diff'].activate()
-            elif c == 'b':
-                active.deactivate()
-                active = panels['branches'].activate()
-            elif c == 'r':
-                active.deactivate()
-                active = panels['remotes'].activate()
-            elif c == 't':
-                active.deactivate()
-                active = panels['tags'].activate()
-            elif c == 'p':
-                active.deactivate()
-                active = panels.popup('Hey!', 'Close me!')
+                else:
+                    break
+            if not panels.pop:
+                if c == '\t':
+                    panels.toggle()
+                elif c == 'h':
+                    panels.active = 'history'
+                elif c == 'c':
+                    panels.active = 'changes'
+                elif c == 's':
+                    panels.active = 'stage'
+                elif c == 'd':
+                    panels.active = 'diff'
+                elif c == 'b':
+                    panels.active = 'branches'
+                elif c == 'r':
+                    panels.active = 'remotes'
+                elif c == 't':
+                    panels.active = 'tags'
+                elif c == 'p':
+                    panels.popup('Hey!', 'Close me!')
         elif c == curses.KEY_BTAB:
-            active = panels.toggle(reverse=True)
+            panels.toggle(reverse=True)
         elif c == curses.KEY_UP:
-            active.move_up()
+            panels.active.move_up()
         elif c == curses.KEY_LEFT:
-            active.move_left()
+            panels.active.move_left()
         elif c == curses.KEY_DOWN:
-            active.move_down()
+            panels.active.move_down()
         elif c == curses.KEY_RIGHT:
-            active.move_right()
+            panels.active.move_right()
         elif c == curses.KEY_PPAGE:
-            active.move_prev_page()
+            panels.active.move_prev_page()
         elif c == curses.KEY_NPAGE:
-            active.move_next_page()
+            panels.active.move_next_page()
         elif c == curses.KEY_RESIZE:
             w.stop()
             for name, panel in six.iteritems(panels):
                 w.event_handler.unsubscribe(panel.handle_event)
             del panels
-            del active
             del w
 
             import time
@@ -96,7 +85,7 @@ def keyloop(stdscr, repo):
             curses.flushinp()  # prevent interpreting next queued KEY_RESIZE
 
             panels = GitermPanelManager(stdscr)
-            active = panels['history'].activate()
+            panels.active = 'history'
             panels.display()
 
             w = watch.Watcher()
@@ -124,10 +113,9 @@ def main(stdscr, repo=None):
         os.chdir(repo)
 
     try:
-        repo = Git(os.getcwd())
-        # git_root_dir = run.git_root_path()
-        # os.chdir(git_root_dir)
-        keyloop(stdscr, repo)
+        run.create_repo(os.getcwd())
+
+        keyloop(stdscr)
     except:
         raise
     finally:
