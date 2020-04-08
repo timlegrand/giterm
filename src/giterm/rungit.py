@@ -157,33 +157,14 @@ def git_tags():
     # git log --date-order --tags --simplify-by-decoration --pretty=format:"%d"
     return data
 
-
-def git_raw_diff(path, cached=False):
-    if not path or type(path) is not str:
-        raise Exception('Path not supported: ' + str(path))
-
-    opt = '--cached' if cached else ''
-    cmd = 'git diff {} -- {}'.format(opt, path)
-    error, data = run(cmd)
-    if not data:
-        cmd = 'git diff -- /dev/null %s' % path
-        error, data = run(cmd)
-        if data:
-            error = 0
-    if error:
-        raise Exception('Error executing "' + cmd + '" (error = ' + str(error))
-    return '\n'.join(data)
-
 def git_diff(path, cached=False):
     global repo
 
-    data = ''
-
     try:
-        data = repo.git.diff(path, cached=cached, minimal=True)
+        data = repo.git.diff('--', path, cached=cached, minimal=True)
         return (False, list(textutils.blocks(data.split('\n'), lambda x: x and x.startswith('@@'))))
     except Exception as e:
-        return (True, f'{str(e)} {data}')
+        return (True, str(e))
 
 def run_simple_command(command, path):
     if not path:
@@ -195,7 +176,6 @@ def run_simple_command(command, path):
 
 def git_stage_file(path):
     run_simple_command('add', path)
-
 
 def git_unstage_file(path):
     run_simple_command('reset', path)
