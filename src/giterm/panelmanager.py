@@ -7,6 +7,7 @@ import six
 from itertools import cycle
 from collections import OrderedDict
 from giterm.panel import Panel, Popup
+import giterm.cursutils as curseutils
 
 class PanelManager(OrderedDict):
 
@@ -70,11 +71,13 @@ class PanelManager(OrderedDict):
                 active = panel
         if active:
             self.stdscr.move(*active.getcontentyx())
+        if self.pop:
+            self.pop.display()
 
     def popup(self, title, msg):
         lines = msg.split('\n')
         t, l = self.middle_point
-        h, w = len(lines), max([len(line) for line in lines])
+        h, w = max(5, len(lines)), max(max([len(line) for line in lines]), 50)
         self.pop = Popup(
             self, self.stdscr,
             h, w, t - h // 2, l - w // 2,

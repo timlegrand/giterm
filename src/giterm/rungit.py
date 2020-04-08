@@ -37,10 +37,10 @@ else:
 
     getstatusoutput = get_status_output
 
-def create_repo(dir=os.getcwd()):
+def create_repo(wd=os.getcwd()):
     global repo
 
-    repo = git.Git(dir)
+    repo = git.Repo(wd)
 
 def run(cmd):
     code, output = getstatusoutput(cmd)
@@ -174,27 +174,16 @@ def git_raw_diff(path, cached=False):
         raise Exception('Error executing "' + cmd + '" (error = ' + str(error))
     return '\n'.join(data)
 
-
 def git_diff(path, cached=False):
-    if not path or type(path) is not str:
-        raise Exception('Path not supported: ' + str(path))
+    global repo
 
-    opt = '--cached' if cached else ''
-    cmd = 'git diff {} -- {}'.format(opt, path)
-    error, data = run(cmd)
-    if not data:
-        cmd = 'git diff -- /dev/null %s' % path
-        error, data = run(cmd)
-        if data:
-            data = data[5:]
-            error = 0
-    else:
-        data = data[4:]
-    if error:
-        raise Exception('Error executing "' + cmd + '" (error = ' + str(error))
-    hunks = list(textutils.blocks(data, lambda x: x and x.startswith('@@')))
-    return hunks
+    data = ''
 
+    try:
+        data = repo.git.diff(path, cached=cached, minimal=True)
+        return (False, list(textutils.blocks(data.split('\n'), lambda x: x and x.startswith('@@'))))
+    except Exception as e:
+        return (True, f'{str(e)} {data}')
 
 def run_simple_command(command, path):
     if not path:
@@ -203,7 +192,6 @@ def run_simple_command(command, path):
     code, output = getstatusoutput(command)
     if code != 0:
         raise Exception('Error %s while running "%s"' % (code, command))
-
 
 def git_stage_file(path):
     run_simple_command('add', path)
@@ -214,9 +202,9 @@ def git_unstage_file(path):
 
 def git_checkout_branch(branch):
     global repo
-    # error, data = run(f'git checkout {branch}')
+    
     try:
-        output = repo.checkout(branch)
+        output = repo.git.checkout(branch)
         return (False, output)
     except Exception as e:
         return (True, str(e))

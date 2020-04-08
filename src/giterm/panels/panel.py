@@ -126,7 +126,6 @@ class Panel(object):
     def handle_event(self, event=None):
         self.data = self.rungit()
         self.setup_content()
-        self.log(f'{self.content} {self.data}')
         self.display()
 
     def update_selection(self):
@@ -246,7 +245,7 @@ class Panel(object):
             self.window.refresh()
 
     def log(self, msg):
-        cursutils.log(self.title + ': ' + msg)
+        cursutils.log(f'{self.title}: {str(msg)}')
 
 class Popup(Panel):
     def display(self):

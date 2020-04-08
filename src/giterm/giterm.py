@@ -11,6 +11,7 @@ import giterm.watch as watch
 import giterm.rungit as run
 import giterm.cursutils as cu
 
+from giterm.colors import colors
 from giterm.gui import GitermPanelManager
 from giterm._version import __version_text__
 
@@ -28,7 +29,7 @@ def keyloop(stdscr):
     panels['changes'].request_diff_in_diff_view(even_not_active=True)
 
     w.start()
-
+    
     while True:
         c = stdscr.getch()
         if 0 < c < 256:
@@ -102,10 +103,11 @@ def keyloop(stdscr):
 
     w.stop()
 
-
 def main(stdscr, repo=None):
     cu.init(stdscr)
     current_dir = os.getcwd()
+
+    colors.create()
 
     # If we were given a repository directory,
     #   use it instead of our cwd.
