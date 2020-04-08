@@ -56,7 +56,7 @@ class PanelManager(OrderedDict):
         for _, panel in it:
             if panel.active:
                 panel.deactivate()
-                self.active = next(it)[0]
+                self.active = next(it)[1]
 
     def on_display(self):
         if self.pop:

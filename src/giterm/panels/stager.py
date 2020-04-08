@@ -52,3 +52,7 @@ class StagerUnstagerPanel(Panel):
          self.action(self.selected_file)
          self.unselect()
       self.display()
+
+   @property
+   def has_changes(self):
+      return self.content

@@ -58,8 +58,6 @@ def keyloop(stdscr):
                     panels.active = 'remotes'
                 elif c == 't':
                     panels.active = 'tags'
-                elif c == 'p':
-                    panels.popup('Hey!', 'Close me!')
         elif c == curses.KEY_BTAB:
             panels.toggle(reverse=True)
         elif c == curses.KEY_UP:

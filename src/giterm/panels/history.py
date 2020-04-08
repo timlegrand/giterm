@@ -1,11 +1,12 @@
 from giterm.panels import StateLinePanel
+import giterm.rungit as rungit
 import giterm.textutils as text
 import curses
 
 class HistoryPanel(StateLinePanel):
    def handle_event(self, event):
       data = self.rungit()
-      self.content = []
+      self.content = ['Uncommited Changes... click to commit']
       for e in data:
          (labels, msg, author, date, sha1) = e
          for i, b in enumerate(labels):
@@ -33,4 +34,18 @@ class HistoryPanel(StateLinePanel):
          if line.startswith('*'):
                self.decorations[i] = curses.A_BOLD
                self.content[i] = line[1:]
+      self.display()
+
+   def action(self):
+      error, output = rungit.git_commit('test')
+
+      if error:
+         self.parent.popup('Commit Error', output)
+
+   def select(self):
+      self.update_selection()
+      if self.selected_content_line != -1:
+         if self.selected_content_line == 0 and self.parent['stage'].has_changes:
+            self.action()
+         self.unselect()
       self.display()

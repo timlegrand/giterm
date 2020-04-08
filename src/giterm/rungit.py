@@ -189,6 +189,15 @@ def git_checkout_branch(branch):
     except Exception as e:
         return (True, str(e))
 
+def git_commit(msg, amend=False):
+    global repo
+
+    try:
+        output = repo.git.commit(m=msg, amend=amend)
+        return (False, output)
+    except Exception as e:
+        return (True, str(e))
+
 if __name__ == '__main__':
     print(git_root_path())
     print(git_changed())
