@@ -6,7 +6,7 @@ import six
 
 from itertools import cycle
 from collections import OrderedDict
-from giterm.panel import Panel, Popup
+from giterm.panels import Panel, Popup
 import giterm.cursutils as curseutils
 
 class PanelManager(OrderedDict):
