@@ -21,7 +21,9 @@ class Panel(object):
     ▒▒▒▒▒▒▒▒ B ▒▒▒(H,W)
     """
 
-    def __init__(self, stdscr, h, w, y, x, title=''):
+    def __init__(self, parent, stdscr, h, w, y, x, title=''):
+        self.parent = parent
+        self.call_on_display = True
         self.content = []
         self.data = []
         self.decorations = {}
@@ -46,6 +48,7 @@ class Panel(object):
         self.draw_hover()
         self.draw_selected()
         self.window.refresh()
+        self.parent.on_display()
 
     def draw_content(self):
         top = self.topLineNum
@@ -125,11 +128,14 @@ class Panel(object):
         self.setup_content()
         self.display()
 
-    def select(self):
+    def update_selection(self):
         if self.hovered_content_line == self.selected_content_line:
             self.selected_content_line = -1
         else:
             self.selected_content_line = self.hovered_content_line
+
+    def select(self):
+        self.update_selection()
         self.display()
 
     def unselect(self):
@@ -239,4 +245,26 @@ class Panel(object):
             self.window.refresh()
 
     def log(self, msg):
-        cursutils.log(self.title + ': ' + msg)
+        cursutils.log(f'{self.title}: {str(msg)}')
+
+class Popup(Panel):
+    def display(self):
+        self.window.erase()
+        self.draw_borders()
+        self.draw_content()
+        self.check_cursor_position()
+        self.draw_hover()
+        self.draw_selected()
+        self.window.refresh()
+    
+    def select(self):
+        pass
+
+class StateLinePanel(Panel):
+    def handle_event(self, event=None):
+        self.content = self.rungit()
+        for i, line in enumerate(self.content):
+            if line.startswith('*'):
+                self.decorations[i] = curses.A_BOLD
+                self.content[i] = line[1:]
+        self.display()

@@ -7,7 +7,9 @@ import shlex
 
 import giterm.textutils as textutils
 import giterm.exception as ex
+import git
 
+global repo
 
 getstatusoutput = None
 
@@ -35,6 +37,10 @@ else:
 
     getstatusoutput = get_status_output
 
+def create_repo(wd=os.getcwd()):
+    global repo
+
+    repo = git.Repo(wd)
 
 def run(cmd):
     code, output = getstatusoutput(cmd)
@@ -151,44 +157,14 @@ def git_tags():
     # git log --date-order --tags --simplify-by-decoration --pretty=format:"%d"
     return data
 
-
-def git_raw_diff(path, cached=False):
-    if not path or type(path) is not str:
-        raise Exception('Path not supported: ' + str(path))
-
-    opt = '--cached' if cached else ''
-    cmd = 'git diff {} -- {}'.format(opt, path)
-    error, data = run(cmd)
-    if not data:
-        cmd = 'git diff -- /dev/null %s' % path
-        error, data = run(cmd)
-        if data:
-            error = 0
-    if error:
-        raise Exception('Error executing "' + cmd + '" (error = ' + str(error))
-    return '\n'.join(data)
-
-
 def git_diff(path, cached=False):
-    if not path or type(path) is not str:
-        raise Exception('Path not supported: ' + str(path))
+    global repo
 
-    opt = '--cached' if cached else ''
-    cmd = 'git diff {} -- {}'.format(opt, path)
-    error, data = run(cmd)
-    if not data:
-        cmd = 'git diff -- /dev/null %s' % path
-        error, data = run(cmd)
-        if data:
-            data = data[5:]
-            error = 0
-    else:
-        data = data[4:]
-    if error:
-        raise Exception('Error executing "' + cmd + '" (error = ' + str(error))
-    hunks = list(textutils.blocks(data, lambda x: x and x.startswith('@@')))
-    return hunks
-
+    try:
+        data = repo.git.diff('--', path, cached=cached, minimal=True)
+        return (False, list(textutils.blocks(data.split('\n'), lambda x: x and x.startswith('@@'))))
+    except Exception as e:
+        return (True, str(e))
 
 def run_simple_command(command, path):
     if not path:
@@ -198,14 +174,29 @@ def run_simple_command(command, path):
     if code != 0:
         raise Exception('Error %s while running "%s"' % (code, command))
 
-
 def git_stage_file(path):
     run_simple_command('add', path)
-
 
 def git_unstage_file(path):
     run_simple_command('reset', path)
 
+def git_checkout_branch(branch):
+    global repo
+    
+    try:
+        output = repo.git.checkout(branch)
+        return (False, output)
+    except Exception as e:
+        return (True, str(e))
+
+def git_commit(msg, amend=False):
+    global repo
+
+    try:
+        output = repo.git.commit(m=msg, amend=amend)
+        return (False, output)
+    except Exception as e:
+        return (True, str(e))
 
 if __name__ == '__main__':
     print(git_root_path())
