@@ -130,8 +130,9 @@ def _main():
         description='''A terminal-based GUI client for Git.''')
     parser.add_argument(
         '-v', '--version', action='version', version=__version_text__)
-    parser.add_argument('repo',
-        nargs='?', help='(Optional) Path to git repository; will default to cwd if not given.')
+    parser.add_argument(
+        'repo', nargs='?',
+        help='(Optional) Path to git repository; will default to cwd if not given.')
     args = parser.parse_args()
 
     # Setup ESCAPE key
