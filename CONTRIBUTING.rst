@@ -112,24 +112,19 @@ Testing:
 
 .. code-block:: bash
 
-    tox -e py27
+    tox -e py38
 
 
 Package testing
 ---------------
 
-One can test setup.py installers:
-    # for Python2:
-    mkvirtualenv giterm-py2
+One can test setup.py installers::
+
+    mkvirtualenv --python=python3 giterm
     pip install -e .
     giterm
     deactivate
-    # for Python3:
-    mkvirtualenv --python=python3 giterm-py3
-    python3 setup.py install
-    giterm
-    deactivate
-    rmvirtualenv giterm-py3
+    rmvirtualenv giterm
 
 
 License
