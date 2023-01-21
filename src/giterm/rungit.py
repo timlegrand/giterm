@@ -3,6 +3,7 @@ from __future__ import absolute_import
 
 import os
 import sys
+import shlex
 
 import giterm.textutils as textutils
 import giterm.exception as ex
@@ -15,7 +16,7 @@ if sys.version_info[0] >= 3:
     import subprocess
 
     def get_status_output(*args, **kwargs):
-        cmd = str(args[0]).split(' ') if len(args) == 1 else args
+        cmd = shlex.split(str(args[0])) if len(args) == 1 else args
         p = subprocess.Popen(
             cmd,
             stdout=subprocess.PIPE,

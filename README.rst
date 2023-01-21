@@ -54,6 +54,12 @@ Installation
 
     pip install giterm
 
+Or even better:
+
+.. code-block:: bash
+
+    pipx run giterm
+
 If you don’t have ``pip`` installed yet:
 
 .. code-block:: bash

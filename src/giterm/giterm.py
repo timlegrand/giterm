@@ -36,7 +36,7 @@ def keyloop(stdscr):
             c = chr(c)
             if c in ' \n':  # 'SPACE BAR' or 'ENTER' hit
                 active.select()
-            elif c in 'Qq':
+            elif c in 'Qq' or c == chr(27):  # 27 is Escape key
                 break
             elif c == '\t':
                 active = panels.toggle()
@@ -106,9 +106,15 @@ def keyloop(stdscr):
     w.stop()
 
 
-def main(stdscr):
+def main(stdscr, repo=None):
     cu.init(stdscr)
     current_dir = os.getcwd()
+
+    # If we were given a repository directory,
+    #   use it instead of our cwd.
+    if repo:
+        os.chdir(repo)
+
     try:
         git_root_dir = run.git_root_path()
         os.chdir(git_root_dir)
@@ -124,8 +130,15 @@ def _main():
         description='''A terminal-based GUI client for Git.''')
     parser.add_argument(
         '-v', '--version', action='version', version=__version_text__)
-    parser.parse_args()
-    curses.wrapper(main)
+    parser.add_argument(
+        'repo', nargs='?',
+        help='(Optional) Path to git repository; will default to cwd if not given.')
+    args = parser.parse_args()
+
+    # Setup ESCAPE key
+    os.environ.setdefault('ESCDELAY', '5')
+
+    curses.wrapper(main, repo=args.repo)
 
 
 if __name__ == '__main__':

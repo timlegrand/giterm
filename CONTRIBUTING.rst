@@ -98,8 +98,8 @@ You can check the state of your dev env any time with:
     pip freeze
 
 
-Testing
--------
+Tests
+-----
 
 To set up the testing/packaging env:
 
@@ -113,6 +113,23 @@ Testing:
 .. code-block:: bash
 
     tox -e py27
+
+
+Package testing
+---------------
+
+One can test setup.py installers:
+    # for Python2:
+    mkvirtualenv giterm-py2
+    pip install -e .
+    giterm
+    deactivate
+    # for Python3:
+    mkvirtualenv --python=python3 giterm-py3
+    python3 setup.py install
+    giterm
+    deactivate
+    rmvirtualenv giterm-py3
 
 
 License

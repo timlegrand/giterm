@@ -1,10 +1,11 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 from __future__ import absolute_import
 
 import curses
 import threading
 
-from giterm.panel import Panel, PanelManager
+from giterm.panel import Panel
+from giterm.panelmanager import PanelManager
 from giterm.postponer import Postponer
 
 import giterm.rungit as rungit
@@ -125,8 +126,8 @@ class Diff(Panel):
         self.data = self.rungit(filepath, staged)
         self.setup_content()
         self.topLineNum = 0
-        self.selected_line = -1
-        self.hovered_line = 0
+        self.selected_content_line = -1
+        self.hovered_content_line = 0
         message = ": " + filepath if type(filepath) == str else ''
         self.title = self.default_title + message
         self.display()
@@ -173,22 +174,22 @@ class StagerUnstager(Panel):
     def request_diff_in_diff_view(self, even_not_active=False):
         if not self.active and not even_not_active:
             return
-        self.hovered_line = self.cursor_y + self.topLineNum - self.CT
-        if self.hovered_line < 0 or self.hovered_line >= len(self.content):
+        self.hovered_content_line = self.cursor_y + self.topLineNum - self.CT
+        if self.hovered_content_line < 0 or self.hovered_content_line >= len(self.content):
             return
-        filepath = self.filename_from_linenum(self.hovered_line)
+        filepath = self.filename_from_linenum(self.hovered_content_line)
         if self.content and filepath:
             self.postponer.set(
                 action=self.parent['diff'].handle_event,
                 args=[filepath, (self.title == 'Staging Area')])
 
     def select(self):
-        if self.selected_line == self.hovered_line:
-            self.selected_line = -1
+        if self.selected_content_line == self.hovered_content_line:
+            self.selected_content_line = -1
         else:
-            self.selected_line = self.hovered_line
-        if self.selected_line != -1:
-            self.selected_file = self.filename_from_linenum(self.selected_line)
+            self.selected_content_line = self.hovered_content_line
+        if self.selected_content_line != -1:
+            self.selected_file = self.filename_from_linenum(self.selected_content_line)
             self.cursor_y = max(self.cursor_y - 1, self.CT)
             self.action(self.selected_file)
             self.unselect()
