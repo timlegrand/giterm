@@ -37,7 +37,7 @@ register() {
 
 
 build() {
-  python setup.py sdist bdist_wheel --universal
+  python setup.py sdist bdist_wheel
 }
 
 
