@@ -11,6 +11,18 @@ welcome, especially about:
 You can also pick an item from the TODO list if you want.
 
 
+TODO
+----
+
+- [ ] move `utils/` scripts to a Makefile
+- [ ] complete Python2 support removal
+- [ ] plug back CI
+- [ ] check and update badges
+- [ ] move Git commands to `GitPython_`
+- [ ] add graph to history
+- [ ] move TUI to rich and/or textual
+
+
 Bugs
 ----
 
@@ -142,3 +154,4 @@ Recommended listening while developing: `alt-J - An Awesome Wave`_
 
 .. _LICENSE file: ./LICENSE
 .. _alt-J - An Awesome Wave: https://en.wikipedia.org/wiki/An_Awesome_Wave
+.. _GitPython: https://gitpython.readthedocs.io/
