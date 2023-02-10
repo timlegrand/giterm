@@ -114,6 +114,9 @@ def main(stdscr, repo=None):
     # If we were given a repository directory,
     #   use it instead of our cwd.
     if repo:
+        if not os.path.isdir(repo):
+            raise ex.ArgumentException(
+                'Given repo argument is not a repository')
         os.chdir(repo)
 
     try:
