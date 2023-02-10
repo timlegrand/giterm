@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 
 
-class ArgumentException(Exception):
+class GitermException(Exception):
     pass
 
 
-class NotAGitRepositoryException(Exception):
+class ArgumentException(GitermException):
     pass
 
 
-class GitNotFoundException(Exception):
+class NotAGitRepositoryException(GitermException):
     pass
 
 
-class CommandErrorException(Exception):
+class GitNotFoundException(GitermException):
     pass

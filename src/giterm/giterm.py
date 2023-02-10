@@ -10,6 +10,7 @@ import six
 import giterm.watch as watch
 import giterm.rungit as run
 import giterm.cursutils as cu
+import giterm.exception as ex
 
 from giterm.gui import GitermPanelManager
 from giterm._version import __version_text__
@@ -138,7 +139,13 @@ def _main():
     # Setup ESCAPE key
     os.environ.setdefault('ESCDELAY', '5')
 
-    curses.wrapper(main, repo=args.repo)
+    try:
+        curses.wrapper(main, repo=args.repo)
+    except ex.GitermException as exc:
+        print(exc)
+        parser.print_usage()
+    except Exception as exc:
+        print(f'giterm: error: {exc}')
 
 
 if __name__ == '__main__':
